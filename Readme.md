@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Александр Юхно](https://up.htmlacademy.ru/ecmascript/15/user/1706347).
-* Наставник: `Неизвестно`.
+* Наставник: [Станислав Посиделов](https://htmlacademy.ru/profile/stanispos).
 
 ---
 
