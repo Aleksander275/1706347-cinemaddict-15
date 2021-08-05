@@ -1,20 +1,20 @@
 import {createHeaderProfile} from './view/header__profile.js';
 import {createMenu} from './view/nav.js';
 import {createSort} from './view/sort.js';
-import {createContent} from './view/content.js';
+import {createContent, Quantity} from './view/content.js';
 import {createFilmCard} from './view/film-card.js';
 import {createButton} from './view/button__show-more.js';
 import {createContentExtra} from './view/content-extra.js';
 
 // Функции отрисовки компонентов
 
-const render = (container, template, place) => {
+const render = (container, template, place = 'beforeend') => {
   container.insertAdjacentHTML(place, template);
 };
 
-const createListFilms = (container, template, place, qtyCards) => {
+const createListFilms = (container, template, qtyCards) => {
   for (let i = 0; i < qtyCards; i++) {
-    render(container, template, place);
+    render(container, template);
   }
 };
 
@@ -22,21 +22,21 @@ const createListFilms = (container, template, place, qtyCards) => {
 
 const header = document.querySelector('.header');
 
-render(header, createHeaderProfile(), 'beforeend');
+render(header, createHeaderProfile());
 
 // Отрисовка навигации
 
 const main = document.querySelector('.main');
 
-render(main, createMenu(), 'beforeend');
+render(main, createMenu());
 
 // Отрисовка сортировки
 
-render(main, createSort(), 'beforeend');
+render(main, createSort());
 
 // Отрисовка контейнера для контента
 
-render(main, createContent(), 'beforeend');
+render(main, createContent());
 
 // Отрисовка списка фильмов
 
@@ -44,38 +44,30 @@ const containerFilms = document.createElement('div');
 containerFilms.classList.add('films-list__container');
 const filmsList = document.querySelector('.films-list');
 filmsList.appendChild(containerFilms);
-const qtyFilms = 5;
 
-createListFilms(containerFilms, createFilmCard(), 'beforeend', qtyFilms);
+createListFilms(containerFilms, createFilmCard(), Quantity.FILMS);
 
 // Отрисовка кнопки
 
-render(filmsList, createButton(), 'beforeend');
+render(filmsList, createButton());
 
 // Отрисовка блоков "Top rated" и "Most commented"
 
 const films = document.querySelector('.films');
-const qtyContainersFilmsExtra = 2;
 
-createListFilms(films, createContentExtra(), 'beforeend', qtyContainersFilmsExtra);
+createListFilms(films, createContentExtra(), Quantity.EXTRA_CONTAINERS);
 
 const filmListExstra = document.querySelectorAll('.films-list--extra');
 
-const topRated = filmListExstra[0].querySelector('.films-list__title');
-topRated.textContent = 'Top rated';
+filmListExstra[0].querySelector('.films-list__title').textContent = 'Top rated';
 
 const containerTopRated = filmListExstra[0].querySelector('.films-list__container');
 
-const qtyFilmsTopRated = 2;
+createListFilms(containerTopRated, createFilmCard(), Quantity.TOP_FILMS);
 
-createListFilms(containerTopRated, createFilmCard(), 'beforeend', qtyFilmsTopRated);
-
-const mostCommented = filmListExstra[1].querySelector('.films-list__title');
-mostCommented.textContent = 'Most commented';
+filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commented';
 
 const containerMostCommented = filmListExstra[1].querySelector('.films-list__container');
 
-const qtyFilmsMostCommented = 2;
-
-createListFilms(containerMostCommented, createFilmCard(), 'beforeend', qtyFilmsMostCommented);
+createListFilms(containerMostCommented, createFilmCard(), Quantity.MOST_FILMS);
 

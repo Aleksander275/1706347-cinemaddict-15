@@ -6,4 +6,11 @@ const createContent = () => (`
   </section>
 `);
 
-export {createContent};
+const Quantity = {
+  FILMS: 5,
+  EXTRA_CONTAINERS: 2,
+  TOP_FILMS: 2,
+  MOST_FILMS: 2,
+};
+
+export {createContent, Quantity};
