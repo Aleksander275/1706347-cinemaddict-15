@@ -21,10 +21,32 @@ const render = (container, template, place = 'beforeend') => {
   container.insertAdjacentHTML(place, template);
 };
 
-const createListFilms = (container, template, qtyCards) => {
-  for (let i = 0; i < qtyCards; i++) {
-    render(container, template);
-  }
+const renderTemplate = (container, element) => {
+  container.append(element);
+};
+
+const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+// клик по кнопкам в карточке фильма
+
+const handlerFilmControls = (film) => {
+  film.querySelector('.film-card__controls').addEventListener('click', (evt) => {
+    evt.target.classList.toggle('film-card__controls-item--active');
+  });
+};
+
+// создание фильма с добавленным обработчиком
+
+const createFilmWithHandler = (card) => {
+  const film = createElement(card);
+  handlerFilmControls(film);
+
+  return film;
 };
 
 // Отрисовка пользователя
@@ -69,7 +91,7 @@ const filmsList = document.querySelector('.films-list');
 filmsList.appendChild(containerFilms);
 
 for (let i = 0; i < Math.min(cards.length, cardCountStep); i++) {
-  render(containerFilms, createFilmCard(cards[i]));
+  renderTemplate(containerFilms, createFilmWithHandler(createFilmCard(cards[i])));
 }
 
 // Отрисовка кнопки
@@ -85,7 +107,7 @@ if (cards.length > cardCountStep) {
     evt.preventDefault();
     cards
       .slice(renderedCardCount, renderedCardCount + cardCountStep)
-      .forEach((card) => render(containerFilms, createFilmCard(card)));
+      .forEach((card) => renderTemplate(containerFilms, createFilmWithHandler(createFilmCard(card))));
 
     renderedCardCount += cardCountStep;
 
@@ -97,6 +119,12 @@ if (cards.length > cardCountStep) {
 
 // Отрисовка блоков "Top rated" и "Most commented"
 
+const createListFilms = (container, template, qtyCards) => {
+  for (let i = 0; i < qtyCards; i++) {
+    render(container, template);
+  }
+};
+
 const films = document.querySelector('.films');
 
 createListFilms(films, createContentExtra(), Quantity.EXTRA_CONTAINERS);
@@ -105,19 +133,7 @@ const filmListExstra = document.querySelectorAll('.films-list--extra');
 
 filmListExstra[0].querySelector('.films-list__title').textContent = 'Top rated';
 
-//const containerTopRated = filmListExstra[0].querySelector('.films-list__container');
-
-// for (let i = 0; i < 4; i++) {
-//   render(containerTopRated, createFilmCard(cards[i]));
-// }
-
 filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commented';
-
-//const containerMostCommented = filmListExstra[1].querySelector('.films-list__container');
-
-// for (let i = 4; i < 8; i++) {
-//   render(containerMostCommented, createFilmCard(cards[i]));
-// }
 
 //
 
@@ -126,32 +142,6 @@ filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commen
 const footerStatistics = document.querySelector('.footer__statistics');
 
 render(footerStatistics ,createFooterStat(cards.length));
-
-// клик по кнопкам в карточке фильма
-
-const buttonsWatchlist = document.getElementsByClassName('film-card__controls-item--add-to-watchlist');
-const buttonHistory = document.getElementsByClassName('film-card__controls-item--mark-as-watched');
-const buttonFavorite = document.getElementsByClassName('film-card__controls-item--favorite');
-
-const addClickButtonsCards = (element, property) => {
-  element.addEventListener('click', () => {
-    if (property === true) {
-      property = false;
-      element.classList.remove('film-card__controls-item--active');
-    } else {
-      property = true;
-      element.classList.add('film-card__controls-item--active');
-    }
-  });
-};
-
-
-for (let j = 0; j < buttonsWatchlist.length; j++) {
-  addClickButtonsCards(buttonsWatchlist[j], cards[j].isWatchlist);
-  addClickButtonsCards(buttonHistory[j], cards[j].isHistory);
-  addClickButtonsCards(buttonFavorite[j], cards[j].isFavorite);
-}
-
 
 // отображение попапа
 
@@ -163,14 +153,14 @@ containerFilms.addEventListener('click', (evt) => {
 
   const buttonClosePopup = document.querySelector('.film-details__close-btn');
   const popup = document.querySelector('.film-details');
+  const ESC = 27;
 
   buttonClosePopup.addEventListener('click', () => {
     popup.remove();
   });
 
-  // eslint-disable-next-line no-shadow
-  document.addEventListener('keydown', (evt) => {
-    if (evt.keyCode === 27) {
+  document.addEventListener('keydown', ({keyCode}) => {
+    if (keyCode === ESC) {
       popup.remove();
     }
   });
