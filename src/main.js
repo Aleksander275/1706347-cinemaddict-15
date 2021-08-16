@@ -1,5 +1,5 @@
-import { createHeaderProfile } from './view/header__profile.js';
-import { createMenu } from './view/nav.js';
+import HeaderProfile from './view/header__profile.js';
+import NavMenu from './view/nav.js';
 import { createSort } from './view/sort.js';
 import { createContent, Quantity } from './view/content.js';
 import { createFilmCard } from './view/film-card.js';
@@ -9,6 +9,7 @@ import { generateCard } from './mock/card-film.js';
 import { getFilter } from './mock/filter.js';
 import { createPopup } from './view/popup.js';
 import { createFooterStat } from './view/footer__stat.js';
+import { createElement } from './utils.js';
 
 const body = document.body;
 const cards = new Array(15).fill().map(generateCard);
@@ -23,13 +24,6 @@ const render = (container, template, place = 'beforeend') => {
 
 const renderTemplate = (container, element) => {
   container.append(element);
-};
-
-const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
 };
 
 // клик по кнопкам в карточке фильма
@@ -53,13 +47,14 @@ const createFilmWithHandler = (card) => {
 
 const header = document.querySelector('.header');
 
-render(header, createHeaderProfile());
+renderTemplate(header, new HeaderProfile().getElement());
 
 // Отрисовка навигации и добавление обработчик при клике на фильтер
 
 const main = document.querySelector('.main');
 
-render(main, createMenu(filters));
+console.log(new NavMenu(filters).getElement());
+renderTemplate(main, new NavMenu(filters).getElement());
 
 const filterButtons = document.querySelectorAll('.main-navigation__item');
 const filterButtonClassActive = 'main-navigation__item--active';
