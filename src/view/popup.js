@@ -1,5 +1,7 @@
 import { createElement } from '../utils';
 
+const ESC = 27;
+
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
 const getGenre = (array) => {
@@ -189,6 +191,27 @@ export default class Popup {
     this._element = null;
   }
 
+  _closeElement () {
+    this.removeElement();
+    document.body.classList.remove('hide-overflow');
+  }
+
+  closePopup () {
+    this._keyCloseHandler();
+    const button = this.getElement().querySelector('.film-details__close-btn');
+    button.addEventListener('click', () => {
+      this._closeElement();
+    });
+  }
+
+  _keyCloseHandler () {
+    document.addEventListener('keydown', ({keyCode}) => {
+      if (keyCode === ESC) {
+        this._closeElement();
+      }
+    });
+  }
+
   getTemplate () {
     return createPopup(this._card);
   }
@@ -202,6 +225,7 @@ export default class Popup {
   }
 
   removeElement () {
+    this.getElement().remove();
     this._element = null;
   }
 }

@@ -137,23 +137,13 @@ renderTemplate(footerStatistics, new FooterStatView(cards.length).getElement());
 containerFilms.addEventListener('click', (evt) => {
   evt.preventDefault();
   if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-    renderTemplate(body, new PopupView(cards[0]).getElement());
+    const film = cards.find((card) => card.id === Number(evt.target.parentNode.dataset.id));
+    const popup = new PopupView(film);
+    popup.closePopup();
+
+    renderTemplate(body, popup.getElement());
     body.classList.add('hide-overflow');
   }
-
-  const buttonClosePopup = document.querySelector('.film-details__close-btn');
-  const popup = document.querySelector('.film-details');
-  const ESC = 27;
-
-  buttonClosePopup.addEventListener('click', () => {
-    popup.remove();
-    body.classList.remove('hide-overflow');
-  });
-
-  document.addEventListener('keydown', ({keyCode}) => {
-    if (keyCode === ESC) {
-      popup.remove();
-      body.classList.remove('hide-overflow');
-    }
-  });
 });
+
+//

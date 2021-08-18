@@ -2,6 +2,7 @@ import { createElement } from '../utils';
 
 const createFilmCard = (card) => {
   const {
+    id,
     poster,
     title,
     rating,
@@ -27,7 +28,7 @@ const createFilmCard = (card) => {
     ? 'film-card__controls-item--favorite film-card__controls-item--active'
     : 'film-card__controls-item--favorite';
 
-  return `<article class="film-card">
+  return `<article data-id=${id} class="film-card">
     <h3 class="film-card__title">${title}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
