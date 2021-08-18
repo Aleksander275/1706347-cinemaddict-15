@@ -1,3 +1,5 @@
+import { createElement } from '../utils';
+
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
 const getGenre = (array) => {
@@ -181,4 +183,25 @@ const createPopup = (card) => {
   `;
 };
 
-export {createPopup};
+export default class Popup {
+  constructor (card) {
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate () {
+    return createPopup(this._card);
+  }
+
+  getElement () {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement () {
+    this._element = null;
+  }
+}

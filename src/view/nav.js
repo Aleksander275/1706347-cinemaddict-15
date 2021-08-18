@@ -11,8 +11,7 @@ const createFilter = (filter) => {
 const createMenu = (filterItems) => {
   const filterFilms = filterItems.map((filter) => createFilter(filter)).join('');
 
-  return `
-    <nav class="main-navigation">
+  return `<nav class="main-navigation">
       <div class="main-navigation__items">
         <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
         ${filterFilms}

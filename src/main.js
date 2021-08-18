@@ -1,30 +1,21 @@
-import HeaderProfile from './view/header__profile.js';
-import NavMenu from './view/nav.js';
-import { createSort } from './view/sort.js';
-import { createContent, Quantity } from './view/content.js';
-import { createFilmCard } from './view/film-card.js';
-import { createButton } from './view/button__show-more.js';
-import { createContentExtra } from './view/content-extra.js';
+import HeaderProfileView from './view/header__profile.js';
+import NavMenuView from './view/nav.js';
+import SortView from './view/sort.js';
+import ContentView from './view/content.js';
+import FilmCardView from './view/film-card.js';
+import ButtonView  from './view/button__show-more.js';
+import ContentExtraView from './view/content-extra.js';
 import { generateCard } from './mock/card-film.js';
 import { getFilter } from './mock/filter.js';
-import { createPopup } from './view/popup.js';
-import { createFooterStat } from './view/footer__stat.js';
-import { createElement } from './utils.js';
+import PopupView from './view/popup.js';
+import FooterStatView from './view/footer__stat.js';
+import { renderTemplate } from './utils.js';
+import NoFilmView from './view/no-film.js';
 
 const body = document.body;
 const cards = new Array(15).fill().map(generateCard);
 const filters = getFilter(cards);
 const cardCountStep = 5;
-
-// Функции отрисовки компонентов
-
-const render = (container, template, place = 'beforeend') => {
-  container.insertAdjacentHTML(place, template);
-};
-
-const renderTemplate = (container, element) => {
-  container.append(element);
-};
 
 // клик по кнопкам в карточке фильма
 
@@ -36,25 +27,24 @@ const handlerFilmControls = (film) => {
 
 // создание фильма с добавленным обработчиком
 
-const createFilmWithHandler = (card) => {
-  const film = createElement(card);
-  handlerFilmControls(film);
+const createFilmWithHandler = (container, card) => {
+  renderTemplate(container, card);
+  handlerFilmControls(card);
 
-  return film;
+  return card;
 };
 
 // Отрисовка пользователя
 
 const header = document.querySelector('.header');
 
-renderTemplate(header, new HeaderProfile().getElement());
+renderTemplate(header, new HeaderProfileView().getElement());
 
 // Отрисовка навигации и добавление обработчик при клике на фильтер
 
 const main = document.querySelector('.main');
 
-console.log(new NavMenu(filters).getElement());
-renderTemplate(main, new NavMenu(filters).getElement());
+renderTemplate(main, new NavMenuView(filters).getElement());
 
 const filterButtons = document.querySelectorAll('.main-navigation__item');
 const filterButtonClassActive = 'main-navigation__item--active';
@@ -72,11 +62,11 @@ filterButtons.forEach((button) => button.addEventListener('click', filterButtonC
 
 // Отрисовка сортировки
 
-render(main, createSort());
+renderTemplate(main, new SortView().getElement());
 
 // Отрисовка контейнера для контента
 
-render(main, createContent());
+renderTemplate(main, new ContentView().getElement());
 
 // Отрисовка списка фильмов
 
@@ -85,8 +75,12 @@ containerFilms.classList.add('films-list__container');
 const filmsList = document.querySelector('.films-list');
 filmsList.appendChild(containerFilms);
 
-for (let i = 0; i < Math.min(cards.length, cardCountStep); i++) {
-  renderTemplate(containerFilms, createFilmWithHandler(createFilmCard(cards[i])));
+if (cards.length === 0) {
+  renderTemplate(filmsList, new NoFilmView().getElement());
+} else {
+  for (let i = 0; i < Math.min(cards.length, cardCountStep); i++) {
+    createFilmWithHandler(containerFilms, new FilmCardView(cards[i]).getElement());
+  }
 }
 
 // Отрисовка кнопки
@@ -94,7 +88,7 @@ for (let i = 0; i < Math.min(cards.length, cardCountStep); i++) {
 if (cards.length > cardCountStep) {
   let renderedCardCount = cardCountStep;
 
-  render(filmsList, createButton());
+  renderTemplate(filmsList, new ButtonView().getElement());
 
   const loadButton = document.querySelector('.films-list__show-more');
 
@@ -102,7 +96,9 @@ if (cards.length > cardCountStep) {
     evt.preventDefault();
     cards
       .slice(renderedCardCount, renderedCardCount + cardCountStep)
-      .forEach((card) => renderTemplate(containerFilms, createFilmWithHandler(createFilmCard(card))));
+      .forEach((card) => {
+        createFilmWithHandler(containerFilms, new FilmCardView(card).getElement());
+      });
 
     renderedCardCount += cardCountStep;
 
@@ -114,15 +110,11 @@ if (cards.length > cardCountStep) {
 
 // Отрисовка блоков "Top rated" и "Most commented"
 
-const createListFilms = (container, template, qtyCards) => {
-  for (let i = 0; i < qtyCards; i++) {
-    render(container, template);
-  }
-};
-
 const films = document.querySelector('.films');
 
-createListFilms(films, createContentExtra(), Quantity.EXTRA_CONTAINERS);
+for (let i = 0; i < 2; i++) {
+  renderTemplate(films, new ContentExtraView().getElement());
+}
 
 const filmListExstra = document.querySelectorAll('.films-list--extra');
 
@@ -136,14 +128,17 @@ filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commen
 
 const footerStatistics = document.querySelector('.footer__statistics');
 
-render(footerStatistics ,createFooterStat(cards.length));
+renderTemplate(footerStatistics, new FooterStatView(cards.length).getElement());
+
+//
 
 // отображение попапа
 
 containerFilms.addEventListener('click', (evt) => {
   evt.preventDefault();
   if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-    render(body, createPopup(cards[0]));
+    renderTemplate(body, new PopupView(cards[0]).getElement());
+    body.classList.add('hide-overflow');
   }
 
   const buttonClosePopup = document.querySelector('.film-details__close-btn');
@@ -152,13 +147,13 @@ containerFilms.addEventListener('click', (evt) => {
 
   buttonClosePopup.addEventListener('click', () => {
     popup.remove();
+    body.classList.remove('hide-overflow');
   });
 
   document.addEventListener('keydown', ({keyCode}) => {
     if (keyCode === ESC) {
       popup.remove();
+      body.classList.remove('hide-overflow');
     }
   });
 });
-
-//
