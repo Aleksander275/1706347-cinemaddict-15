@@ -1,3 +1,5 @@
+import { createElement } from '../utils';
+
 const createLoading = () => (`
   <section class="films">
     <section class="films-list">
@@ -6,4 +8,24 @@ const createLoading = () => (`
   </section>
 `);
 
-export {createLoading};
+export default class Loading {
+  constructor () {
+    this._element = null;
+  }
+
+  getTemplate () {
+    return createLoading();
+  }
+
+  getElement () {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement () {
+    this._element = null;
+  }
+}

@@ -1,16 +1,29 @@
-const createContent = () => (`
-  <section class="films">
+import { createElement } from '../utils';
+
+const createContent = () => (`<section class="films">
     <section class="films-list">
-      <h2 class="films-list__title">There are no movies in our database</h2>
     </section>
   </section>
 `);
 
-const Quantity = {
-  FILMS: 5,
-  EXTRA_CONTAINERS: 2,
-  TOP_FILMS: 2,
-  MOST_FILMS: 2,
-};
+export default class Content {
+  constructor () {
+    this._element = null;
+  }
 
-export {createContent, Quantity};
+  getTemplate () {
+    return createContent();
+  }
+
+  getElement () {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement () {
+    this._element = null;
+  }
+}
