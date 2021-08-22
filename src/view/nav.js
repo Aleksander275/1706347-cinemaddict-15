@@ -1,4 +1,4 @@
-import { createElement } from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createFilter = (filter) => {
   const {name, count} = filter;
@@ -20,26 +20,31 @@ const createMenu = (filterItems) => {
     </nav>`;
 };
 
-export default class NavMenu {
+export default class NavMenu extends AbstractView {
   constructor (filters) {
+    super();
+
     this._filters = filters;
-    this._element = null;
+
+    this._filterHendler = this._filterHendler.bind(this);
+  }
+
+  _filterHendler (evt) {
+    evt.preventDefault();
+    const filterButtons = this.getElement().querySelectorAll('.main-navigation__item');
+    filterButtons.forEach((button) => {
+      button === evt.currentTarget
+        ? button.classList.add('main-navigation__item--active')
+        : button.classList.remove('main-navigation__item--active');
+    });
+  }
+
+  addClickHendler (button) {
+    button.addEventListener('click', this._filterHendler);
   }
 
   getTemplate () {
     return createMenu(this._filters);
-  }
-
-  getElement () {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement () {
-    this._element = null;
   }
 }
 
