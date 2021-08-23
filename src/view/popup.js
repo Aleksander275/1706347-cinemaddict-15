@@ -1,4 +1,4 @@
-import { createElement } from '../utils';
+import AbstractView from './abstract.js';
 
 const ESC = 27;
 
@@ -185,23 +185,16 @@ const createPopup = (card) => {
   `;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor (card) {
+    super();
+
     this._card = card;
-    this._element = null;
   }
 
   _closeElement () {
     this.removeElement();
     document.body.classList.remove('hide-overflow');
-  }
-
-  closePopup () {
-    this._keyCloseHandler();
-    const button = this.getElement().querySelector('.film-details__close-btn');
-    button.addEventListener('click', () => {
-      this._closeElement();
-    });
   }
 
   _keyCloseHandler () {
@@ -212,20 +205,21 @@ export default class Popup {
     });
   }
 
+  closePopup () {
+    this._keyCloseHandler();
+    const button = this.getElement().querySelector('.film-details__close-btn');
+    button.addEventListener('click', () => {
+      this._closeElement();
+    });
+  }
+
   getTemplate () {
     return createPopup(this._card);
   }
 
-  getElement () {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
   removeElement () {
     this.getElement().remove();
+
     this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import { createElement } from '../utils';
+import AbstractView from './abstract.js';
 
 const createLoading = () => (`
   <section class="films">
@@ -8,24 +8,8 @@ const createLoading = () => (`
   </section>
 `);
 
-export default class Loading {
-  constructor () {
-    this._element = null;
-  }
-
+export default class Loading extends AbstractView {
   getTemplate () {
     return createLoading();
-  }
-
-  getElement () {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement () {
-    this._element = null;
   }
 }

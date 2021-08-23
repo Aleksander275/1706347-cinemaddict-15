@@ -11,28 +11,12 @@ import PopupView from './view/popup.js';
 import FooterStatView from './view/footer__stat.js';
 import { renderTemplate } from './utils.js';
 import NoFilmView from './view/no-film.js';
+import BoardView from './view/board.js';
 
 const body = document.body;
 const cards = new Array(15).fill().map(generateCard);
 const filters = getFilter(cards);
 const cardCountStep = 5;
-
-// клик по кнопкам в карточке фильма
-
-const handlerFilmControls = (film) => {
-  film.querySelector('.film-card__controls').addEventListener('click', (evt) => {
-    evt.target.classList.toggle('film-card__controls-item--active');
-  });
-};
-
-// создание фильма с добавленным обработчиком
-
-const createFilmWithHandler = (container, card) => {
-  renderTemplate(container, card);
-  handlerFilmControls(card);
-
-  return card;
-};
 
 // Отрисовка пользователя
 
@@ -44,21 +28,13 @@ renderTemplate(header, new HeaderProfileView().getElement());
 
 const main = document.querySelector('.main');
 
-renderTemplate(main, new NavMenuView(filters).getElement());
+const navMenu = new NavMenuView(filters);
 
-const filterButtons = document.querySelectorAll('.main-navigation__item');
-const filterButtonClassActive = 'main-navigation__item--active';
+renderTemplate(main, navMenu.getElement());
 
-const filterButtonClickHandler = (evt) => {
-  evt.preventDefault();
-  filterButtons.forEach((button) => {
-    button === evt.currentTarget
-      ? button.classList.add(filterButtonClassActive)
-      : button.classList.remove(filterButtonClassActive);
-  });
-};
+const filterButtons = navMenu.getElement().querySelectorAll('.main-navigation__item');
 
-filterButtons.forEach((button) => button.addEventListener('click', filterButtonClickHandler));
+filterButtons.forEach((button) => navMenu.addClickHendler(button));
 
 // Отрисовка сортировки
 
@@ -66,20 +42,24 @@ renderTemplate(main, new SortView().getElement());
 
 // Отрисовка контейнера для контента
 
-renderTemplate(main, new ContentView().getElement());
+const content = new ContentView();
+
+renderTemplate(main, content.getElement());
+
+const filmsList = content.getElement().querySelector('.films-list');
 
 // Отрисовка списка фильмов
 
-const containerFilms = document.createElement('div');
-containerFilms.classList.add('films-list__container');
-const filmsList = document.querySelector('.films-list');
-filmsList.appendChild(containerFilms);
+const containerFilms = new BoardView();
+renderTemplate(filmsList, containerFilms.getElement());
 
 if (cards.length === 0) {
   renderTemplate(filmsList, new NoFilmView().getElement());
 } else {
   for (let i = 0; i < Math.min(cards.length, cardCountStep); i++) {
-    createFilmWithHandler(containerFilms, new FilmCardView(cards[i]).getElement());
+    const film = new FilmCardView(cards[i]);
+    renderTemplate(containerFilms.getElement(), film.getElement());
+    film.handlerFilmControls(cards[i]);
   }
 }
 
@@ -88,22 +68,23 @@ if (cards.length === 0) {
 if (cards.length > cardCountStep) {
   let renderedCardCount = cardCountStep;
 
-  renderTemplate(filmsList, new ButtonView().getElement());
+  const loadButton = new ButtonView();
 
-  const loadButton = document.querySelector('.films-list__show-more');
+  renderTemplate(filmsList, loadButton.getElement());
 
-  loadButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
+  loadButton.setClickHandler(() => {
     cards
       .slice(renderedCardCount, renderedCardCount + cardCountStep)
       .forEach((card) => {
-        createFilmWithHandler(containerFilms, new FilmCardView(card).getElement());
+        const film = new FilmCardView(card);
+        renderTemplate(containerFilms.getElement(), film.getElement());
+        film.handlerFilmControls(card);
       });
 
     renderedCardCount += cardCountStep;
 
     if (renderedCardCount >= cards.length) {
-      loadButton.remove();
+      loadButton.getElement().remove();
     }
   });
 }
@@ -122,19 +103,15 @@ filmListExstra[0].querySelector('.films-list__title').textContent = 'Top rated';
 
 filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commented';
 
-//
-
 // Отрисовка статистики в подвале сайта
 
 const footerStatistics = document.querySelector('.footer__statistics');
 
 renderTemplate(footerStatistics, new FooterStatView(cards.length).getElement());
 
-//
-
 // отображение попапа
 
-containerFilms.addEventListener('click', (evt) => {
+containerFilms.renderPopup((evt) => {
   evt.preventDefault();
   if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
     const film = cards.find((card) => card.id === Number(evt.target.parentNode.dataset.id));
