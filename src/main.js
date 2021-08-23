@@ -32,10 +32,6 @@ const navMenu = new NavMenuView(filters);
 
 renderTemplate(main, navMenu.getElement());
 
-const filterButtons = navMenu.getElement().querySelectorAll('.main-navigation__item');
-
-filterButtons.forEach((button) => navMenu.addClickHendler(button));
-
 // Отрисовка сортировки
 
 renderTemplate(main, new SortView().getElement());
