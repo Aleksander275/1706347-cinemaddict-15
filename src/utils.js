@@ -1,4 +1,14 @@
+import Abstract from './view/abstract.js';
+
 const renderTemplate = (container, element) => {
+  if (container instanceof Abstract) {
+    container = container.getElement();
+  }
+
+  if (element instanceof Abstract) {
+    element = element.getElement();
+  }
+
   container.append(element);
 };
 
@@ -9,4 +19,13 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export { createElement, renderTemplate };
+const remove = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error('Can remove only components');
+  }
+
+  component.getElement().remove();
+  component.removeElement();
+};
+
+export { createElement, renderTemplate, remove };
