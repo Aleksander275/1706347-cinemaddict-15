@@ -28,4 +28,58 @@ const remove = (component) => {
   component.removeElement();
 };
 
-export { createElement, renderTemplate, remove };
+const replace = (newChild, oldChild) => {
+  if (oldChild instanceof Abstract) {
+    oldChild = oldChild.getElement();
+  }
+
+  if (newChild instanceof Abstract) {
+    newChild = newChild.getElement();
+  }
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null || oldChild === null || newChild === null) {
+    throw new Error('Can\'t replace unexisting elements');
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
+
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
+const sortDate = (filmA, filmB) => {
+  if (filmA.date > filmB.date) {
+    return -1;
+  }
+  if (filmA.date < filmB.date) {
+    return 1;
+  }
+
+  return 0;
+};
+
+const sortRating = (filmA, filmB) => {
+  if (filmA.rating > filmB.rating) {
+    return -1;
+  }
+  if (filmA.rating < filmB.rating) {
+    return 1;
+  }
+
+  return 0;
+};
+
+export { createElement, renderTemplate, remove, replace, updateItem, sortDate, sortRating };
