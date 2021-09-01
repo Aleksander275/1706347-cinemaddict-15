@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
 
 // Функция для генерации случайного числа, взята из интернета и доработана
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
@@ -161,7 +162,7 @@ const getDescription = () => {
 };
 
 const getComments = () => ({
-  id: getRandom(1, 20),
+  id: uuidv4(),
   text: getData(COMMENTS),
   emotion: getData(emotions),
   author: getData(authorsComment),
@@ -185,7 +186,7 @@ const generateCard = () => {
     : null;
 
   return {
-    id: getRandom(1, 20),
+    id: uuidv4(),
     poster: `images/posters/${getData(posters)}`,
     title: getData(titles),
     alternativeTitle: getData(titles),
@@ -210,3 +211,4 @@ const generateCard = () => {
 };
 
 export {generateCard};
+

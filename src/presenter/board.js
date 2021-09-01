@@ -18,7 +18,7 @@ export default class BoardFilm {
     this._filmList = this._boardComponent.getElement().querySelector('.films-list');
     this._sortComponent = new SortView();
     this._filmListComponent = new BoardView();
-    this._noTaskComponent = new NoFilmView();
+    this._noFilmComponent = new NoFilmView();
 
     this._renderedFilmCount = CARD_COUNT_STEP;
     this._loadButton = new ButtonView();
@@ -110,7 +110,7 @@ export default class BoardFilm {
   }
 
   _renderNoFilms () {
-    renderTemplate(this._boardComponent, this._noTaskComponent);
+    renderTemplate(this._boardComponent, this._noFilmComponent);
   }
 
   _handleLoadButton() {
