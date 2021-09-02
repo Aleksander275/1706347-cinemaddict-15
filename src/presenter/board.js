@@ -2,7 +2,6 @@ import SortView from '../view/sort.js';
 import ContentView from '../view/content.js';
 import FilmPresenter from './film.js';
 import ButtonView  from '../view/button__show-more.js';
-import PopupView from '../view/popup.js';
 import NoFilmView from '../view/no-film.js';
 import BoardView from '../view/board.js';
 import { renderTemplate, remove, updateItem, sortRating, sortDate } from '../utils.js';
@@ -98,8 +97,6 @@ export default class BoardFilm {
     if (this._boardFilms.length > CARD_COUNT_STEP) {
       this._renderLoadButton();
     }
-
-    this._renderDescFilm(this._boardFilms);
   }
 
   _clearFilmList() {
@@ -127,20 +124,6 @@ export default class BoardFilm {
     renderTemplate(this._filmList, this._loadButton);
 
     this._loadButton.setClickHandler(this._handleLoadButton);
-  }
-
-  _renderDescFilm (cards) {
-    this._filmListComponent.renderPopup((evt) => {
-      evt.preventDefault();
-      if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-        const film = cards.find((card) => card.id === Number(evt.target.parentNode.dataset.id));
-        const popup = new PopupView(film);
-        popup.closePopup();
-
-        renderTemplate(document.body, popup.getElement());
-        document.body.classList.add('hide-overflow');
-      }
-    });
   }
 
   _renderBoard () {

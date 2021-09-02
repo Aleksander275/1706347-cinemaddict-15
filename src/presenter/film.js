@@ -1,4 +1,5 @@
 import FilmCardView from '../view/film-card';
+import PopupView from '../view/popup.js';
 import { renderTemplate, remove, replace } from '../utils.js';
 
 export default class Film {
@@ -21,6 +22,7 @@ export default class Film {
     this._film.setFavoriteClickHandler(this._handleFavoriteClick);
     this._film.setHistoryClickHandler(this._handleHistoryClick);
     this._film.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._renderDescFilm();
 
     if (prevFilmComponent === null) {
       renderTemplate(this._filmContainer, this._film);
@@ -36,6 +38,27 @@ export default class Film {
 
   destroy () {
     remove(this._film);
+  }
+
+  _renderDescFilm () {
+    this._film.getElement().addEventListener('click', ((evt) => {
+      evt.preventDefault();
+      if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
+        const popup = new PopupView(this._card);
+        popup.closePopup();
+        popup.setClickWatchlistHandler(this._handleWatchlistClick);
+        popup.setClickHistoryHandler(this._handleHistoryClick);
+        popup.setClickFavoriteHandler(this._handleFavoriteClick);
+
+        if (document.querySelector('.film-details')) {
+          document.querySelector('.film-details').remove();
+          renderTemplate(document.body, popup.getElement());
+        }
+
+        renderTemplate(document.body, popup.getElement());
+        document.body.classList.add('hide-overflow');
+      }
+    }));
   }
 
   _handleFavoriteClick() {
