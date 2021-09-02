@@ -190,39 +190,12 @@ export default class Popup extends AbstractView {
     super();
 
     this._card = card;
-    this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
-    this._handleHistoryClick = this._handleHistoryClick.bind(this);
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  _handleWatchlistClick (evt) {
-    evt.preventDefault();
-    this._callback.watchlistClick();
-  }
-
-  _handleFavoriteClick (evt) {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  }
-
-  _handleHistoryClick (evt) {
-    evt.preventDefault();
-    this._callback.historyClick();
-  }
-
-  setClickWatchlistHandler (callback) {
-    this._callback.watchlistClick = callback;
-    this.getElement().querySelector('.film-details__control-button--watchlist').addEventListener('click', this._handleWatchlistClick);
-  }
-
-  setClickHistoryHandler (callback) {
-    this._callback.historyClick = callback;
-    this.getElement().querySelector('.film-details__control-button--watched').addEventListener('click', this._handleHistoryClick);
-  }
-
-  setClickFavoriteHandler (callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._handleFavoriteClick);
+  setClickHandler (handlerElementClick) {
+    Object.keys(handlerElementClick).forEach((key) => {
+      this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', handlerElementClick[key]);
+    });
   }
 
   _closeElement () {

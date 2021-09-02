@@ -190,7 +190,7 @@ const generateCard = () => {
     poster: `images/posters/${getData(posters)}`,
     title: getData(titles),
     alternativeTitle: getData(titles),
-    rating: getRating(1,10),
+    rating: getRating(1, 9),
     ageRating: getRandom(0,18),
     director: getData(director),
     writers,

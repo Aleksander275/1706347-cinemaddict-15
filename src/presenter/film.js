@@ -11,6 +11,18 @@ export default class Film {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleHistoryClick = this._handleHistoryClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
+
+    this._handlerFilmDescClick = {
+      'favorite': this._handleFavoriteClick,
+      'watched': this._handleHistoryClick,
+      'watchlist': this._handleWatchlistClick,
+    };
+
+    this._handlerFilmClick = {
+      'favorite': this._handleFavoriteClick,
+      'mark-as-watched': this._handleHistoryClick,
+      'add-to-watchlist': this._handleWatchlistClick,
+    };
   }
 
   init (card) {
@@ -19,9 +31,7 @@ export default class Film {
     const prevFilmComponent = this._film;
 
     this._film = new FilmCardView(card);
-    this._film.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._film.setHistoryClickHandler(this._handleHistoryClick);
-    this._film.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._film.setFilmClickHandler(this._handlerFilmClick);
     this._renderDescFilm();
 
     if (prevFilmComponent === null) {
@@ -46,9 +56,7 @@ export default class Film {
       if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
         const popup = new PopupView(this._card);
         popup.closePopup();
-        popup.setClickWatchlistHandler(this._handleWatchlistClick);
-        popup.setClickHistoryHandler(this._handleHistoryClick);
-        popup.setClickFavoriteHandler(this._handleFavoriteClick);
+        popup.setClickHandler(this._handlerFilmDescClick);
 
         if (document.querySelector('.film-details')) {
           document.querySelector('.film-details').remove();
