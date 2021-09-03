@@ -27,20 +27,21 @@ export default class NavMenu extends AbstractView {
     this._filters = filters;
 
     this._filterHendler = this._filterHendler.bind(this);
+
+    this.addClickHendler();
   }
 
   _filterHendler (evt) {
     evt.preventDefault();
-    const filterButtons = this.getElement().querySelectorAll('.main-navigation__item');
-    filterButtons.forEach((button) => {
-      button === evt.currentTarget
-        ? button.classList.add('main-navigation__item--active')
-        : button.classList.remove('main-navigation__item--active');
+    const navItems =  this.getElement().querySelectorAll('.main-navigation__item');
+    navItems.forEach((button) => {
+      const navItem = evt.target.closest('.main-navigation__item');
+      button.classList.toggle('main-navigation__item--active', button === navItem);
     });
   }
 
-  addClickHendler (button) {
-    button.addEventListener('click', this._filterHendler);
+  addClickHendler () {
+    this.getElement().addEventListener('click', this._filterHendler);
   }
 
   getTemplate () {

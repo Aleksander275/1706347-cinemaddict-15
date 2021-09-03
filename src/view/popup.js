@@ -192,6 +192,12 @@ export default class Popup extends AbstractView {
     this._card = card;
   }
 
+  setClickHandler (handlerElementClick) {
+    Object.keys(handlerElementClick).forEach((key) => {
+      this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', handlerElementClick[key]);
+    });
+  }
+
   _closeElement () {
     this.removeElement();
     document.body.classList.remove('hide-overflow');
