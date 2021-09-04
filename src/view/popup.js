@@ -32,7 +32,7 @@ const getComment = (comment) => {
     </li>`;
 };
 
-const createPopup = (card) => {
+const createPopup = (data) => {
   const {
     poster,
     title,
@@ -52,12 +52,27 @@ const createPopup = (card) => {
     isWatchlist,
     isHistory,
     isFavorite,
-  } = card;
+    isComments,
+    isEmoji,
+    isEmojiName,
+  } = data;
 
   const createComments = (array) => {
     const arrayComments = array.map((comment) => getComment(comment));
     return arrayComments;
   };
+
+  const createContainerComments = (dataComments) => dataComments
+    ? `<ul class="film-details__comments-list">
+      ${createComments(comments)}
+      </ul>`
+    : '';
+
+  const createEmojiComment = (dataEmoji) => dataEmoji
+    ? `<img src="./images/emoji/${isEmojiName}.png" width="30" height="30" alt="emoji">`
+    : '';
+
+  const genreTitle = genres.length > 1 ? 'Genres' : 'Genre';
 
   const watchlistClassName = isWatchlist
     ? 'film-details__control-button--watchlist film-details__control-button--active'
@@ -122,7 +137,7 @@ const createPopup = (card) => {
                 <td class="film-details__cell">${releaseCountry}</td>
               </tr>
               <tr class="film-details__row">
-                <td class="film-details__term">Genres</td>
+                <td class="film-details__term">${genreTitle}</td>
                 <td class="film-details__cell">
                   ${getGenre(genres)}
               </tr>
@@ -143,14 +158,13 @@ const createPopup = (card) => {
 
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentLength}</span></h3>
-
-          <ul class="film-details__comments-list">
-            ${createComments(comments)}
-          </ul>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentLength}</span></h3>
+          ${createContainerComments(isComments)}
 
           <div class="film-details__new-comment">
-            <div class="film-details__add-emoji-label"></div>
+            <div class="film-details__add-emoji-label">
+              ${createEmojiComment(isEmoji)}
+            </div>
 
             <label class="film-details__comment-label">
               <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -189,7 +203,12 @@ export default class Popup extends AbstractView {
   constructor (card) {
     super();
 
-    this._card = card;
+    this._data = Popup.parseCardToData(card);
+
+    this._emojiInputHandler = this._emojiInputHandler.bind(this);
+    this._textInputHandler = this._textInputHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   setClickHandler (handlerElementClick) {
@@ -198,8 +217,34 @@ export default class Popup extends AbstractView {
     });
   }
 
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.closePopup();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('input', this._emojiInputHandler);
+    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._textInputHandler);
+  }
+
+  _emojiInputHandler (evt) {
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      this.updateData({
+        isEmoji: true,
+        isEmojiName: evt.target.value,
+      });
+    }
+  }
+
+  _textInputHandler (evt) {
+    this.updateData({
+      isTextComment: evt.target.value,
+    });
+  }
+
   _closeElement () {
-    this.removeElement();
+    this.getElement().remove();
     document.body.classList.remove('hide-overflow');
   }
 
@@ -220,12 +265,60 @@ export default class Popup extends AbstractView {
   }
 
   getTemplate () {
-    return createPopup(this._card);
+    return createPopup(this._data);
+  }
+
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+      {},
+      this._data,
+      update,
+    );
+
+    this.updateElement();
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+
+    this.restoreHandlers();
+  }
+
+  static parseCardToData (card) {
+    return Object.assign(
+      {},
+      card,
+      {
+        isComments: card.commentLength,
+        isEmoji: false,
+        isEmojiName: null,
+        isTextComment: '',
+      },
+    );
+  }
+
+  static parseDataToCard(data) {
+    data = Object.assign({}, data);
+
+    delete data.isComments;
+    delete data.isEmoji;
+    delete data.isEmojiName;
+    delete data.isTextComment;
+
+    return data;
   }
 
   removeElement () {
-    this.getElement().remove();
-
     this._element = null;
   }
 }
