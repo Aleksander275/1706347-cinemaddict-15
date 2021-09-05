@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 const ESC = 27;
 
@@ -199,7 +199,7 @@ const createPopup = (data) => {
   `;
 };
 
-export default class Popup extends AbstractView {
+export default class Popup extends SmartView {
   constructor (card) {
     super();
 
@@ -212,6 +212,7 @@ export default class Popup extends AbstractView {
   }
 
   setClickHandler (handlerElementClick) {
+    this._callback.descControl = handlerElementClick;
     Object.keys(handlerElementClick).forEach((key) => {
       this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', handlerElementClick[key]);
     });
@@ -220,6 +221,7 @@ export default class Popup extends AbstractView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.closePopup();
+    this.setClickHandler(this._callback.descControl);
   }
 
   _setInnerHandlers() {
@@ -233,14 +235,19 @@ export default class Popup extends AbstractView {
       this.updateData({
         isEmoji: true,
         isEmojiName: evt.target.value,
+        scrollPosition: this.getElement().scrollTop,
       });
     }
+
+    this.getElement().scrollTop = this._data.scrollPosition;
+    this.getElement().querySelector('.film-details__comment-input').value = this._data.isTextComment;
   }
 
   _textInputHandler (evt) {
+    evt.preventDefault();
     this.updateData({
       isTextComment: evt.target.value,
-    });
+    }, true);
   }
 
   _closeElement () {
@@ -266,32 +273,6 @@ export default class Popup extends AbstractView {
 
   getTemplate () {
     return createPopup(this._data);
-  }
-
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-    );
-
-    this.updateElement();
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
   }
 
   static parseCardToData (card) {
