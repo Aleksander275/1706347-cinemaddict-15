@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { SortType } from '../const.js';
+import { SortType } from '../utils/const.js';
 
 const createSort = () => (`<ul class="sort">
     <li><a href="#" class="sort__button sort__button--active" data-sort-type=${SortType.DEFAULT}>Sort by default</a></li>

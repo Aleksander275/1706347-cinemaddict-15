@@ -1,6 +1,7 @@
 import FilmCardView from '../view/film-card';
 import PopupView from '../view/popup.js';
-import { renderTemplate, remove, replace } from '../utils.js';
+import { renderTemplate, remove, replace } from '../utils/utils.js';
+import { UpdateType, UserAction, StatusFilm } from '../utils/const';
 
 export default class Film {
   constructor (filmContainer, changeData) {
@@ -57,6 +58,7 @@ export default class Film {
         const popup = new PopupView(this._card);
         popup.closePopup();
         popup.setClickHandler(this._handlerFilmDescClick);
+        popup.handlerAddComment();
 
         if (document.querySelector('.film-details')) {
           document.querySelector('.film-details').remove();
@@ -71,6 +73,8 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+      StatusFilm.TOGGLE_FAVORITE,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -83,6 +87,8 @@ export default class Film {
 
   _handleHistoryClick () {
     this._changeData(
+      StatusFilm.TOGGLE_HISTORY,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -95,6 +101,8 @@ export default class Film {
 
   _handleWatchlistClick () {
     this._changeData(
+      StatusFilm.TOGGLE_WATCHLIST,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,

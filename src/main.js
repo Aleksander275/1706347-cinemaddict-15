@@ -5,10 +5,14 @@ import { generateCard } from './mock/card-film.js';
 import { getFilter } from './mock/filter.js';
 import FooterStatView from './view/footer__stat.js';
 import BoardFilmPresenter from './presenter/board.js';
-import { renderTemplate } from './utils.js';
+import { renderTemplate } from './utils/utils.js';
+import FilmsModel from './model/films.js';
 
 const cards = new Array(15).fill().map(generateCard);
 const filters = getFilter(cards);
+
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(cards);
 
 const header = document.querySelector('.header');
 
@@ -20,9 +24,9 @@ const navMenu = new NavMenuView(filters);
 
 renderTemplate(main, navMenu.getElement());
 
-const boardPresenter = new BoardFilmPresenter(main);
+const boardPresenter = new BoardFilmPresenter(main, filmsModel);
 
-boardPresenter.init(cards);
+boardPresenter.init();
 
 // Отрисовка блоков "Top rated" и "Most commented"
 

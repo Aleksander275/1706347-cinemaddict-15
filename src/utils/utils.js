@@ -1,4 +1,4 @@
-import Abstract from './view/abstract.js';
+import Abstract from '../view/abstract.js';
 
 const renderTemplate = (container, element) => {
   if (container instanceof Abstract) {
@@ -46,20 +46,6 @@ const replace = (newChild, oldChild) => {
   parent.replaceChild(newChild, oldChild);
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const sortDate = (filmA, filmB) => {
   if (filmA.date > filmB.date) {
     return -1;
@@ -82,4 +68,4 @@ const sortRating = (filmA, filmB) => {
   return 0;
 };
 
-export { createElement, renderTemplate, remove, replace, updateItem, sortDate, sortRating };
+export { createElement, renderTemplate, remove, replace, sortDate, sortRating };

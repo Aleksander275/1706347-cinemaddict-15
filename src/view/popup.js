@@ -1,6 +1,7 @@
 import SmartView from './smart.js';
 
 const ESC = 27;
+const ENTER = 13;
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
@@ -221,12 +222,25 @@ export default class Popup extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.closePopup();
+    this.handlerAddComment();
     this.setClickHandler(this._callback.descControl);
   }
 
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('input', this._emojiInputHandler);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._textInputHandler);
+  }
+
+  handlerAddComment () {
+    document.addEventListener('keydown', ({keyCode}) => {
+      if (keyCode === ENTER) {
+        this._addComment();
+      }
+    });
+  }
+
+  _addComment () {
+
   }
 
   _emojiInputHandler (evt) {
