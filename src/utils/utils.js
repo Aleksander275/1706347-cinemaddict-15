@@ -1,6 +1,6 @@
 import Abstract from '../view/abstract.js';
 
-const renderTemplate = (container, element) => {
+const renderTemplate = (container, element, position = true) => {
   if (container instanceof Abstract) {
     container = container.getElement();
   }
@@ -9,7 +9,11 @@ const renderTemplate = (container, element) => {
     element = element.getElement();
   }
 
-  container.append(element);
+  if (position) {
+    container.append(element);
+  } else {
+    container.prepend(element);
+  }
 };
 
 const createElement = (template) => {
@@ -20,6 +24,10 @@ const createElement = (template) => {
 };
 
 const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }

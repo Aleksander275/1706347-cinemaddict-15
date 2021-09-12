@@ -21,4 +21,11 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-export { SortType, UserAction, UpdateType, StatusFilm };
+const FilterType = {
+  ALL: 'all',
+  WATCHLIST: 'watchlist',
+  HISTORY: 'history',
+  FAVORITES: 'favorites',
+};
+
+export { SortType, UserAction, UpdateType, StatusFilm, FilterType };

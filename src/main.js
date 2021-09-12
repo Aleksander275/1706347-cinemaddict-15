@@ -1,18 +1,21 @@
 import HeaderProfileView from './view/header__profile.js';
-import NavMenuView from './view/nav.js';
+//import NavMenuView from './view/nav.js';
 import ContentExtraView from './view/content-extra.js';
 import { generateCard } from './mock/card-film.js';
-import { getFilter } from './mock/filter.js';
+import FilterPresenter from './presenter/filter.js';
 import FooterStatView from './view/footer__stat.js';
 import BoardFilmPresenter from './presenter/board.js';
 import { renderTemplate } from './utils/utils.js';
 import FilmsModel from './model/films.js';
+import FilterModel from './model/filters.js';
 
 const cards = new Array(15).fill().map(generateCard);
-const filters = getFilter(cards);
+//const filters = getFilter(cards);
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(cards);
+
+const filterModel = new FilterModel();
 
 const header = document.querySelector('.header');
 
@@ -20,12 +23,14 @@ renderTemplate(header, new HeaderProfileView().getElement());
 
 const main = document.querySelector('.main');
 
-const navMenu = new NavMenuView(filters);
+// const navMenu = new NavMenuView(filters);
 
-renderTemplate(main, navMenu.getElement());
+// renderTemplate(main, navMenu.getElement());
 
-const boardPresenter = new BoardFilmPresenter(main, filmsModel);
+const boardPresenter = new BoardFilmPresenter(main, filmsModel, filterModel);
+const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
+filterPresenter.init();
 boardPresenter.init();
 
 // Отрисовка блоков "Top rated" и "Most commented"
