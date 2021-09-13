@@ -1,19 +1,20 @@
 import AbstractView from './abstract.js';
+import { UpdateType, FilterType } from '../utils/const.js';
 
-const createFilter = (filter) => {
+const createFilter = (filter, currentFilterType) => {
   const {name, count} = filter;
 
   return (`
-    <a href="#${name}" class="main-navigation__item">${name} <span class="main-navigation__item-count">${count}</span></a>
+    <a href="#${name}" class="main-navigation__item ${currentFilterType === name ? 'main-navigation__item--active': ''}" data-filter-name="${name}">${name}<span class="main-navigation__item-count">${count}</span></a>
   `);
 };
 
-const createMenu = (filterItems) => {
-  const filterFilms = filterItems.map((filter) => createFilter(filter)).join('');
+const createMenu = (filterItems, currentFilterType) => {
+  const filterFilms = filterItems.map((filter) => createFilter(filter, currentFilterType)).join('');
 
   return `<nav class="main-navigation">
       <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
+        <a href="#all" data-filter-name="all" class="main-navigation__item ${currentFilterType === FilterType.ALL ? 'main-navigation__item--active': ''}">All movies</a>
         ${filterFilms}
       </div>
       <a href="#stats" class="main-navigation__additional">Stats</a>
@@ -21,8 +22,10 @@ const createMenu = (filterItems) => {
 };
 
 export default class NavMenu extends AbstractView {
-  constructor (filters) {
+  constructor (filters, filterModel) {
     super();
+
+    this._filterModel = filterModel;
 
     this._filters = filters;
 
@@ -33,11 +36,9 @@ export default class NavMenu extends AbstractView {
 
   _filterHendler (evt) {
     evt.preventDefault();
-    const navItems =  this.getElement().querySelectorAll('.main-navigation__item');
-    navItems.forEach((button) => {
-      const navItem = evt.target.closest('.main-navigation__item');
-      button.classList.toggle('main-navigation__item--active', button === navItem);
-    });
+    if (evt.target.closest('.main-navigation__item')) {
+      this._filterModel.setFilter(UpdateType.MAJOR, evt.target.dataset.filterName);
+    }
   }
 
   addClickHendler () {
@@ -45,7 +46,7 @@ export default class NavMenu extends AbstractView {
   }
 
   getTemplate () {
-    return createMenu(this._filters);
+    return createMenu(this._filters, this._filterModel.getFilter());
   }
 }
 

@@ -5,6 +5,9 @@ export default class Filter extends AbstractObserver {
   constructor () {
     super();
     this._activeFilter = FilterType.ALL;
+
+    this.setFilter = this.setFilter.bind(this);
+    this.getFilter = this.getFilter.bind(this);
   }
 
   setFilter (updateType, filter) {

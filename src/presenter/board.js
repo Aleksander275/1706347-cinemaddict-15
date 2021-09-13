@@ -18,7 +18,6 @@ export default class BoardFilm {
     this._filterModel = filterModel;
 
     this._boardComponent = null;
-    //this._filmList = this._boardComponent.getElement().querySelector('.films-list');
     this._sortComponent = null;
     this._filmListComponent = null;
     this._noFilmComponent = new NoFilmView();

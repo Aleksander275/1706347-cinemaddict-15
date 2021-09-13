@@ -21,7 +21,7 @@ export default class Filter {
     const filters = this._getFilters();
     const prevFilterComponent = this._filterComponent;
 
-    this._filterComponent = new NavMenuView(filters, this._filterModel.getFilter());
+    this._filterComponent = new NavMenuView(filters, this._filterModel);
 
     if (prevFilterComponent === null) {
       renderTemplate(this._filterContainer, this._filterComponent);
@@ -47,12 +47,12 @@ export default class Filter {
       },
       {
         type: FilterType.HISTORY,
-        name: 'History',
+        name: 'history',
         count: filter[FilterType.HISTORY](films).length,
       },
       {
         type: FilterType.FAVORITES,
-        name: 'Favorites',
+        name: 'favorites',
         count: filter[FilterType.FAVORITES](films).length,
       },
     ];
