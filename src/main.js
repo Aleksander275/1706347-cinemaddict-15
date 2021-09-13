@@ -1,5 +1,5 @@
 import HeaderProfileView from './view/header__profile.js';
-//import NavMenuView from './view/nav.js';
+import CommentsModel from './model/comments.js';
 import ContentExtraView from './view/content-extra.js';
 import { generateCard } from './mock/card-film.js';
 import FilterPresenter from './presenter/filter.js';
@@ -10,10 +10,12 @@ import FilmsModel from './model/films.js';
 import FilterModel from './model/filters.js';
 
 const cards = new Array(15).fill().map(generateCard);
-//const filters = getFilter(cards);
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(cards);
+
+const commentsModel = new CommentsModel();
+commentsModel.setComments(cards);
 
 const filterModel = new FilterModel();
 
@@ -23,11 +25,7 @@ renderTemplate(header, new HeaderProfileView().getElement());
 
 const main = document.querySelector('.main');
 
-// const navMenu = new NavMenuView(filters);
-
-// renderTemplate(main, navMenu.getElement());
-
-const boardPresenter = new BoardPresenter(main, filmsModel, filterModel);
+const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel);
 const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
 filterPresenter.init();

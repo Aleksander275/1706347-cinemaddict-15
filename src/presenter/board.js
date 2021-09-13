@@ -6,21 +6,23 @@ import NoFilmView from '../view/no-film.js';
 import BoardView from '../view/board.js';
 import { filter } from '../utils/filters.js';
 import { renderTemplate, remove, sortRating, sortDate } from '../utils/utils.js';
-import { SortType, UpdateType, UserAction, StatusFilm } from '../utils/const.js';
+import { SortType, UpdateType, UserAction, StatusFilm, FilterType } from '../utils/const.js';
 
 const CARD_COUNT_STEP = 5;
 
 export default class Board {
-  constructor (boardContainer, filmsModel, filterModel) {
+  constructor (boardContainer, filmsModel, filterModel, commentsModel) {
     this._boardContainer = boardContainer;
 
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
+    this._commentsModel = commentsModel;
 
+    this._filterType = FilterType.ALL;
     this._boardComponent = null;
     this._sortComponent = null;
     this._filmListComponent = null;
-    this._noFilmComponent = new NoFilmView();
+    this._noFilmComponent = null;
 
     this._renderedFilmCount = CARD_COUNT_STEP;
     this._loadButton = null;
@@ -45,9 +47,9 @@ export default class Board {
   }
 
   _getFilms() {
-    const filterType = this._filterModel.getFilter();
+    this._filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();
-    const filtredFilms = filter[filterType](films);
+    const filtredFilms = filter[this._filterType](films);
 
     switch (this._currentSortType) {
       case SortType.DATE:
@@ -120,7 +122,7 @@ export default class Board {
   }
 
   _renderFilm (card) {
-    const filmPresenter = new FilmPresenter(this._filmListComponent, this._handleViewAction);
+    const filmPresenter = new FilmPresenter(this._filmListComponent, this._handleViewAction, this._commentsModel);
     filmPresenter.init(card);
     this._filmsPresenters.set(card.id, filmPresenter);
   }
@@ -148,7 +150,8 @@ export default class Board {
   }
 
   _renderNoFilms () {
-    renderTemplate(this._boardComponent, this._noFilmComponent);
+    this._noFilmComponent = new NoFilmView(this._filterType);
+    renderTemplate(this._filmListComponent, this._noFilmComponent);
   }
 
   _handleLoadButton() {
@@ -209,7 +212,11 @@ export default class Board {
     remove(this._filmListComponent);
     remove(this._boardComponent);
     remove(this._sortComponent);
-    remove(this._noFilmComponent);
+
+    if (this._noFilmComponent) {
+      remove(this._noFilmComponent);
+    }
+
     remove(this._loadButton);
 
     if (resetRenderedFilmCount) {
