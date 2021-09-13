@@ -4,7 +4,7 @@ import ContentExtraView from './view/content-extra.js';
 import { generateCard } from './mock/card-film.js';
 import FilterPresenter from './presenter/filter.js';
 import FooterStatView from './view/footer__stat.js';
-import BoardFilmPresenter from './presenter/board.js';
+import BoardPresenter from './presenter/board.js';
 import { renderTemplate } from './utils/utils.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filters.js';
@@ -27,7 +27,7 @@ const main = document.querySelector('.main');
 
 // renderTemplate(main, navMenu.getElement());
 
-const boardPresenter = new BoardFilmPresenter(main, filmsModel, filterModel);
+const boardPresenter = new BoardPresenter(main, filmsModel, filterModel);
 const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
 filterPresenter.init();

@@ -29,20 +29,20 @@ export default class NavMenu extends AbstractView {
 
     this._filters = filters;
 
-    this._filterHendler = this._filterHendler.bind(this);
+    this._filterHandler = this._filterHandler.bind(this);
 
-    this.addClickHendler();
+    this.addClickHandler();
   }
 
-  _filterHendler (evt) {
+  _filterHandler (evt) {
     evt.preventDefault();
     if (evt.target.closest('.main-navigation__item')) {
       this._filterModel.setFilter(UpdateType.MAJOR, evt.target.dataset.filterName);
     }
   }
 
-  addClickHendler () {
-    this.getElement().addEventListener('click', this._filterHendler);
+  addClickHandler () {
+    this.getElement().addEventListener('click', this._filterHandler);
   }
 
   getTemplate () {

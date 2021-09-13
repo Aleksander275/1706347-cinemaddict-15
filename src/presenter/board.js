@@ -1,7 +1,7 @@
 import SortView from '../view/sort.js';
 import ContentView from '../view/content.js';
 import FilmPresenter from './film.js';
-import ButtonView  from '../view/button__show-more.js';
+import ButtonView  from '../view/button.js';
 import NoFilmView from '../view/no-film.js';
 import BoardView from '../view/board.js';
 import { filter } from '../utils/filters.js';
@@ -10,7 +10,7 @@ import { SortType, UpdateType, UserAction, StatusFilm } from '../utils/const.js'
 
 const CARD_COUNT_STEP = 5;
 
-export default class BoardFilm {
+export default class Board {
   constructor (boardContainer, filmsModel, filterModel) {
     this._boardContainer = boardContainer;
 

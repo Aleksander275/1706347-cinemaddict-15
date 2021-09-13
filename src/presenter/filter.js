@@ -1,4 +1,4 @@
-import NavMenuView from '../view/nav.js';
+import NavMenuView from '../view/nav-menu.js';
 import { replace, remove, renderTemplate } from '../utils/utils.js';
 import { filter } from '../utils/filters.js';
 import { FilterType } from '../utils/const.js';
