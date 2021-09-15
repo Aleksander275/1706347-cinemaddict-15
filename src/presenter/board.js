@@ -4,9 +4,10 @@ import FilmPresenter from './film.js';
 import ButtonView  from '../view/button.js';
 import NoFilmView from '../view/no-film.js';
 import BoardView from '../view/board.js';
+import StatisticView from '../view/statistic.js';
 import { filter } from '../utils/filters.js';
-import { renderTemplate, remove, sortRating, sortDate } from '../utils/utils.js';
-import { SortType, UpdateType, UserAction, StatusFilm, FilterType } from '../utils/const.js';
+import { renderTemplate, remove, sortRating, sortDate, watchingDate } from '../utils/utils.js';
+import { SortType, UpdateType, UserAction, StatusFilm, FilterType, StatsFilterType } from '../utils/const.js';
 
 const CARD_COUNT_STEP = 5;
 
@@ -19,16 +20,18 @@ export default class Board {
     this._commentsModel = commentsModel;
 
     this._filterType = FilterType.ALL;
+    this._statsFilterType = StatsFilterType.ALL;
     this._boardComponent = null;
     this._sortComponent = null;
     this._filmListComponent = null;
     this._noFilmComponent = null;
+    this._statsComponent = null;
 
     this._renderedFilmCount = CARD_COUNT_STEP;
     this._loadButton = null;
 
     this._handleLoadButton = this._handleLoadButton.bind(this);
-
+    this._handleStatsFilter = this._handleStatsFilter.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
@@ -37,11 +40,14 @@ export default class Board {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._currentSortType = SortType.DEFAULT;
 
-    this._filmsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+
   }
 
   init () {
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
+
     this._renderSort();
     this._renderBoard();
   }
@@ -107,7 +113,36 @@ export default class Board {
         this._renderSort();
         this._renderBoard();
         break;
+      case UpdateType.STATS:
+        this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
+        this._renderStats();
+        break;
     }
+  }
+
+  _renderStats() {
+    if (this._statsComponent !== null) {
+      this._statsComponent = null;
+    }
+
+    this._filterType = FilterType.HISTORY;
+    const films = this._filmsModel.getFilms();
+    const filtredFilms = filter[this._filterType](films);
+    const filtredStastFilms = watchingDate(filtredFilms, this._statsFilterType);
+
+    this._statsComponent = new StatisticView(this._statsFilterType, filtredStastFilms);
+    renderTemplate(this._boardContainer, this._statsComponent);
+    this._statsComponent.setFilterTypeChangeHandler(this._handleStatsFilter);
+  }
+
+  _handleStatsFilter(statsFilter) {
+    if (this._statsFilterType === statsFilter) {
+      return;
+    }
+
+    this._statsFilterType = statsFilter;
+    remove(this._statsComponent);
+    this._renderStats();
   }
 
   _renderSort () {
@@ -204,11 +239,10 @@ export default class Board {
   }
 
   _clearBoard({resetRenderedFilmCount = false, resetSortType = false} = {}) {
-    const filmCount = this._getFilms().length;
-
     this._filmsPresenters.forEach((presenter) => presenter.destroy());
     this._filmsPresenters.clear();
 
+    remove(this._statsComponent);
     remove(this._filmListComponent);
     remove(this._boardComponent);
     remove(this._sortComponent);
@@ -222,6 +256,7 @@ export default class Board {
     if (resetRenderedFilmCount) {
       this._renderedFilmCount = CARD_COUNT_STEP;
     } else {
+      const filmCount = this._getFilms().length;
       this._renderedTaskCount = Math.min(filmCount, this._renderedFilmCount);
     }
 

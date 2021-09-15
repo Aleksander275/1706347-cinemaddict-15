@@ -10,6 +10,7 @@ const createFilter = (filter, currentFilterType) => {
 };
 
 const createMenu = (filterItems, currentFilterType) => {
+  filterItems.pop();
   const filterFilms = filterItems.map((filter) => createFilter(filter, currentFilterType)).join('');
 
   return `<nav class="main-navigation">
@@ -17,7 +18,7 @@ const createMenu = (filterItems, currentFilterType) => {
         <a href="#all" data-filter-name="all" class="main-navigation__item ${currentFilterType === FilterType.ALL ? 'main-navigation__item--active': ''}">All movies</a>
         ${filterFilms}
       </div>
-      <a href="#stats" class="main-navigation__additional">Stats</a>
+      <a href="#stats" data-filter-name="stats" class="main-navigation__additional ${'stats' === currentFilterType ? 'main-navigation__additional--active' : ''}">Stats</a>
     </nav>`;
 };
 
@@ -30,7 +31,9 @@ export default class NavMenu extends AbstractView {
     this._filters = filters;
 
     this._filterHandler = this._filterHandler.bind(this);
+    this._openedStats = this._openedStats.bind(this);
 
+    this.handlerClickStats();
     this.addClickHandler();
   }
 
@@ -43,6 +46,16 @@ export default class NavMenu extends AbstractView {
 
   addClickHandler () {
     this.getElement().addEventListener('click', this._filterHandler);
+  }
+
+  _openedStats (evt) {
+    evt.preventDefault();
+
+    this._filterModel.setFilter(UpdateType.STATS, evt.target.dataset.filterName);
+  }
+
+  handlerClickStats () {
+    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._openedStats);
   }
 
   getTemplate () {

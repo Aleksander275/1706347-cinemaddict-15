@@ -15,10 +15,19 @@ const UserAction = {
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
 
+const StatsFilterType = {
+  ALL: 'all-time',
+  YEAR: 'year',
+  MONTH: 'month',
+  WEEK: 'week',
+  TODAY: 'today',
+};
+
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  STATS: 'STATS',
 };
 
 const FilterType = {
@@ -26,6 +35,7 @@ const FilterType = {
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites',
+  STATS: 'stats',
 };
 
-export { SortType, UserAction, UpdateType, StatusFilm, FilterType };
+export { SortType, UserAction, UpdateType, StatusFilm, FilterType, StatsFilterType };
