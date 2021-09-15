@@ -5,7 +5,7 @@ const createFilter = (filter, currentFilterType) => {
   const {name, count} = filter;
 
   return (`
-    <a href="#${name}" class="main-navigation__item ${currentFilterType === name ? 'main-navigation__item--active': ''}" data-filter-name="${name}">${name}<span class="main-navigation__item-count">${count}</span></a>
+    <a href="#${name}" class="main-navigation__item ${currentFilterType === name ? 'main-navigation__item--active': ''}" data-filter-name="${name}">${name}<span data-filter-name="${name}" class="main-navigation__item-count">${count}</span></a>
   `);
 };
 

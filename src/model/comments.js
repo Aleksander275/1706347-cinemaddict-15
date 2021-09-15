@@ -25,8 +25,8 @@ export default class Comments extends AbstractObserver {
   }
 
   deleteComment(updateType, commentId, filmId) {
-    const filteredComments = this._comments[filmId].filter(({id}) => id !== commentId);
-    this._comments[filmId] = filteredComments;
+    const filmIndex = this._comments[filmId].findIndex(({id}) => id === commentId);
+    this._comments[filmId].splice(filmIndex, 1);
     this._notify(updateType);
   }
 }

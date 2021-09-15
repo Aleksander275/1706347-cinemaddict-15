@@ -24,7 +24,7 @@ const getComment = (comment) => {
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
+      ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : ''}
     </span>
     <div>
       <p class="film-details__comment-text">${text}</p>
@@ -56,17 +56,16 @@ const createPopup = (data) => {
     isWatchlist,
     isHistory,
     isFavorite,
-    isComments,
     isEmoji,
     isEmojiName,
   } = data;
 
-  const createComments = (array) => {
-    const arrayComments = array.map((comment) => getComment(comment));
+  const createComments = (commentsArray) => {
+    const arrayComments = commentsArray.map((comment) => getComment(comment));
     return arrayComments;
   };
 
-  const createContainerComments = (dataComments) => dataComments
+  const createContainerComments = (hasComments) => hasComments
     ? `<ul class="film-details__comments-list">
       ${createComments(comments)}
       </ul>`
@@ -163,7 +162,7 @@ const createPopup = (data) => {
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          ${createContainerComments(isComments)}
+          ${createContainerComments(Boolean(comments.length))}
 
           <div class="film-details__new-comment">
             <div class="film-details__add-emoji-label">
@@ -171,7 +170,7 @@ const createPopup = (data) => {
             </div>
 
             <label class="film-details__comment-label">
-              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" autocomplete="off"></textarea>
             </label>
 
             <div class="film-details__emoji-list">
@@ -272,7 +271,8 @@ export default class Popup extends SmartView {
       },
     });
 
-    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false});
+    this._emojiName = null;
+    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null});
   }
 
   _emojiInputHandler (evt) {
@@ -328,7 +328,6 @@ export default class Popup extends SmartView {
       {},
       card,
       {
-        isComments: card.comments.length,
         isEmoji: false,
         isEmojiName: null,
         isTextComment: '',
@@ -339,7 +338,6 @@ export default class Popup extends SmartView {
   static parseDataToCard(data) {
     data = Object.assign({}, data);
 
-    delete data.isComments;
     delete data.isEmoji;
     delete data.isEmojiName;
     delete data.isTextComment;
