@@ -80,43 +80,43 @@ export default class Board {
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
-      case StatusFilm.TOGGLE_FAVORITE:
+      case StatusFilm.TOGGLE_FAVORITE: {
         this._filmsModel.updateFilm(updateType, update);
-        break;
-      case StatusFilm.TOGGLE_HISTORY:
+        break;}
+      case StatusFilm.TOGGLE_HISTORY: {
         this._filmsModel.updateFilm(updateType, update);
-        break;
-      case StatusFilm.TOGGLE_WATCHLIST:
+        break;}
+      case StatusFilm.TOGGLE_WATCHLIST: {
         this._filmsModel.updateFilm(updateType, update);
-        break;
-      case UserAction.ADD_COMMENT:
+        break;}
+      case UserAction.ADD_COMMENT: {
         this._filmsModel.addComment(updateType, update);
-        break;
-      case UserAction.DELETE_COMMENT:
+        break;}
+      case UserAction.DELETE_COMMENT: {
         this._filmsModel.deleteComment(updateType, update);
-        break;
+        break;}
     }
   }
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {
-      case UpdateType.PATCH:
+      case UpdateType.PATCH: {
         this._filmsPresenters.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
+        break;}
+      case UpdateType.MINOR: {
         this._clearBoard();
         this._renderSort();
         this._renderBoard();
-        break;
-      case UpdateType.MAJOR:
+        break;}
+      case UpdateType.MAJOR: {
         this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderSort();
         this._renderBoard();
-        break;
-      case UpdateType.STATS:
+        break;}
+      case UpdateType.STATS: {
         this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderStats();
-        break;
+        break;}
     }
   }
 

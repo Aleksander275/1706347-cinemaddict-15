@@ -15,9 +15,18 @@ export default class Film {
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
 
     this._handlerFilmDescClick = {
-      'favorite': this._handleFavoriteClick,
-      'watched': this._handleHistoryClick,
-      'watchlist': this._handleWatchlistClick,
+      'favorite': {
+        flag: 'isFavorite',
+        method: this._handleFavoriteClick,
+      },
+      'watched': {
+        flag: 'isHistory',
+        method: this._handleHistoryClick,
+      },
+      'watchlist': {
+        flag: 'isWatchlist',
+        method: this._handleWatchlistClick,
+      },
     };
 
     this._handlerFilmClick = {
@@ -76,7 +85,7 @@ export default class Film {
   _handleFavoriteClick() {
     this._changeData(
       StatusFilm.TOGGLE_FAVORITE,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -90,7 +99,7 @@ export default class Film {
   _handleHistoryClick () {
     this._changeData(
       StatusFilm.TOGGLE_HISTORY,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -104,7 +113,7 @@ export default class Film {
   _handleWatchlistClick () {
     this._changeData(
       StatusFilm.TOGGLE_WATCHLIST,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,

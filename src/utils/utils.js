@@ -112,6 +112,22 @@ const getTopGenres = (arrayFilms, isSortCount) => {
   return sortGenres;
 };
 
+const getProfile = (arrayHistory) => {
+
+  if (arrayHistory.length === 0) {
+    return '';
+  }
+  if (arrayHistory.length > 0 && arrayHistory.length <= 10) {
+    return 'novice';
+  }
+  if (arrayHistory.length > 10 && arrayHistory.length <= 20) {
+    return 'fan';
+  }
+  if (arrayHistory.length > 20) {
+    return 'movie buff';
+  }
+};
+
 const getTotalDuration = (data) => {
   const timeList = [];
   data.forEach((film) => {
@@ -136,4 +152,4 @@ const watchingDate = (date, sortType) => {
   }
 };
 
-export { createElement, renderTemplate, remove, replace, sortDate, sortRating, watchingDate, getTopGenres, getTotalDuration};
+export { createElement, renderTemplate, remove, replace, sortDate, sortRating, watchingDate, getTopGenres, getTotalDuration, getProfile};

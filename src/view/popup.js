@@ -220,7 +220,11 @@ export default class Popup extends SmartView {
   setClickHandler (handlerElementClick) {
     this._callback.descControl = handlerElementClick;
     Object.keys(handlerElementClick).forEach((key) => {
-      this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', handlerElementClick[key]);
+      this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', () => {
+        const {flag, method} = handlerElementClick[key];
+        method();
+        this.updateData({[flag]: !this._data[flag]});
+      });
     });
   }
 
