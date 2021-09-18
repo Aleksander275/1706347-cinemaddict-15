@@ -1,42 +1,34 @@
 import HeaderProfileView from './view/header__profile.js';
-import NavMenuView from './view/nav.js';
-import ContentExtraView from './view/content-extra.js';
+import CommentsModel from './model/comments.js';
 import { generateCard } from './mock/card-film.js';
-import { getFilter } from './mock/filter.js';
+import FilterPresenter from './presenter/filter.js';
 import FooterStatView from './view/footer__stat.js';
-import BoardFilmPresenter from './presenter/board.js';
-import { renderTemplate } from './utils.js';
+import BoardPresenter from './presenter/board.js';
+import { renderTemplate } from './utils/utils.js';
+import FilmsModel from './model/films.js';
+import FilterModel from './model/filters.js';
 
-const cards = new Array(15).fill().map(generateCard);
-const filters = getFilter(cards);
+const cards = new Array(25).fill().map(generateCard);
+
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(cards);
+
+const commentsModel = new CommentsModel();
+commentsModel.setComments(cards);
+
+const filterModel = new FilterModel();
 
 const header = document.querySelector('.header');
 
-renderTemplate(header, new HeaderProfileView().getElement());
+renderTemplate(header, new HeaderProfileView(cards));
 
 const main = document.querySelector('.main');
 
-const navMenu = new NavMenuView(filters);
+const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel);
+const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
-renderTemplate(main, navMenu.getElement());
-
-const boardPresenter = new BoardFilmPresenter(main);
-
-boardPresenter.init(cards);
-
-// Отрисовка блоков "Top rated" и "Most commented"
-
-const films = document.querySelector('.films');
-
-for (let i = 0; i < 2; i++) {
-  renderTemplate(films, new ContentExtraView().getElement());
-}
-
-const filmListExstra = document.querySelectorAll('.films-list--extra');
-
-filmListExstra[0].querySelector('.films-list__title').textContent = 'Top rated';
-
-filmListExstra[1].querySelector('.films-list__title').textContent = 'Most commented';
+filterPresenter.init();
+boardPresenter.init();
 
 // Отрисовка статистики в подвале сайта
 

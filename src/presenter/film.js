@@ -1,11 +1,13 @@
-import FilmCardView from '../view/film-card';
+import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
-import { renderTemplate, remove, replace } from '../utils.js';
+import { renderTemplate, remove, replace } from '../utils/utils.js';
+import { UpdateType, StatusFilm } from '../utils/const';
 
 export default class Film {
-  constructor (filmContainer, changeData) {
+  constructor (filmContainer, changeData, commentsModel) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
+    this._commentsModel = commentsModel;
     this._film = null;
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -13,9 +15,18 @@ export default class Film {
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
 
     this._handlerFilmDescClick = {
-      'favorite': this._handleFavoriteClick,
-      'watched': this._handleHistoryClick,
-      'watchlist': this._handleWatchlistClick,
+      'favorite': {
+        flag: 'isFavorite',
+        method: this._handleFavoriteClick,
+      },
+      'watched': {
+        flag: 'isHistory',
+        method: this._handleHistoryClick,
+      },
+      'watchlist': {
+        flag: 'isWatchlist',
+        method: this._handleWatchlistClick,
+      },
     };
 
     this._handlerFilmClick = {
@@ -54,9 +65,11 @@ export default class Film {
     this._film.getElement().addEventListener('click', ((evt) => {
       evt.preventDefault();
       if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-        const popup = new PopupView(this._card);
+        const popup = new PopupView(this._card, this._commentsModel);
         popup.closePopup();
         popup.setClickHandler(this._handlerFilmDescClick);
+        popup.handlerAddComment();
+        popup.handlerRemoveComment();
 
         if (document.querySelector('.film-details')) {
           document.querySelector('.film-details').remove();
@@ -71,6 +84,8 @@ export default class Film {
 
   _handleFavoriteClick() {
     this._changeData(
+      StatusFilm.TOGGLE_FAVORITE,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -83,6 +98,8 @@ export default class Film {
 
   _handleHistoryClick () {
     this._changeData(
+      StatusFilm.TOGGLE_HISTORY,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,
@@ -95,6 +112,8 @@ export default class Film {
 
   _handleWatchlistClick () {
     this._changeData(
+      StatusFilm.TOGGLE_WATCHLIST,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._card,

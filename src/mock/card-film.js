@@ -57,13 +57,13 @@ const dates = [
 ];
 
 const runTime = [
-  '1h 59m',
-  '1h 18m',
-  '1h 21m',
-  '54m',
-  '16m',
-  '1h 36m',
-  '1h 05m',
+  119,
+  78,
+  81,
+  54,
+  103,
+  96,
+  65,
 ];
 
 const director = [
