@@ -4,10 +4,11 @@ import { renderTemplate, remove, replace } from '../utils/utils.js';
 import { UpdateType, StatusFilm } from '../utils/const';
 
 export default class Film {
-  constructor (filmContainer, changeData, commentsModel) {
+  constructor (filmContainer, changeData, commentsModel, api) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
     this._commentsModel = commentsModel;
+    this._api = api;
     this._film = null;
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);

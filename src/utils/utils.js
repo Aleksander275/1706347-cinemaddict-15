@@ -114,17 +114,19 @@ const getTopGenres = (arrayFilms, isSortCount) => {
 
 const getProfile = (arrayHistory) => {
 
-  if (arrayHistory.length === 0) {
-    return '';
-  }
-  if (arrayHistory.length > 0 && arrayHistory.length <= 10) {
-    return 'novice';
-  }
-  if (arrayHistory.length > 10 && arrayHistory.length <= 20) {
-    return 'fan';
-  }
-  if (arrayHistory.length > 20) {
-    return 'movie buff';
+  switch (true) {
+    case arrayHistory.length === 0: {
+      return '';
+    }
+    case arrayHistory.length > 0 && arrayHistory.length <= 10: {
+      return 'novice';
+    }
+    case arrayHistory.length > 10 && arrayHistory.length <= 20: {
+      return 'fan';
+    }
+    case arrayHistory.length > 20: {
+      return 'movie buff';
+    }
   }
 };
 
@@ -139,16 +141,21 @@ const getTotalDuration = (data) => {
 
 const watchingDate = (date, sortType) => {
   switch (sortType) {
-    case StatsFilterType.ALL:
+    case StatsFilterType.ALL: {
       return date;
-    case StatsFilterType.YEAR:
+    }
+    case StatsFilterType.YEAR: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -31536000000);
-    case StatsFilterType.MONTH:
+    }
+    case StatsFilterType.MONTH: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -2592000000);
-    case StatsFilterType.WEEK:
+    }
+    case StatsFilterType.WEEK: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -604800000);
-    case StatsFilterType.TODAY:
+    }
+    case StatsFilterType.TODAY: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -86400000);
+    }
   }
 };
 

@@ -6,11 +6,13 @@ export default class Comments extends AbstractObserver {
     this._comments = {};
   }
 
-  setComments(cards) {
+  setComments(updateType, cards) {
     this._comments = cards.reduce((acc, card) => {
       acc[card.id] = card.comments;
       return acc;
     }, {});
+
+    this._notify(updateType);
   }
 
   getCommentsById(id) {
@@ -28,5 +30,29 @@ export default class Comments extends AbstractObserver {
     const filmIndex = this._comments[filmId].findIndex(({id}) => id === commentId);
     this._comments[filmId].splice(filmIndex, 1);
     this._notify(updateType);
+  }
+
+  static adaptToClient(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+
+      },
+    );
+
+    return adaptedFilm;
+  }
+
+  static adaptToServer(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+
+      },
+    );
+
+    return adaptedFilm;
   }
 }

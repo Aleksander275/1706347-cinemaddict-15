@@ -28,6 +28,7 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   STATS: 'STATS',
+  INIT: 'INIT',
 };
 
 const FilterType = {

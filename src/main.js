@@ -1,38 +1,41 @@
 import HeaderProfileView from './view/header__profile.js';
 import CommentsModel from './model/comments.js';
-import { generateCard } from './mock/card-film.js';
 import FilterPresenter from './presenter/filter.js';
 import FooterStatView from './view/footer__stat.js';
 import BoardPresenter from './presenter/board.js';
 import { renderTemplate } from './utils/utils.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filters.js';
+import Api from './api.js';
+import { UpdateType } from './utils/const.js';
 
-const cards = new Array(25).fill().map(generateCard);
+const AUTHORIZATION = 'Basic yj1z888hh88888r';
+const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
+
+const header = document.querySelector('.header');
+const main = document.querySelector('.main');
+const footerStatistics = document.querySelector('.footer__statistics');
+
+const api = new Api(END_POINT, AUTHORIZATION);
 
 const filmsModel = new FilmsModel();
-filmsModel.setFilms(cards);
 
 const commentsModel = new CommentsModel();
-commentsModel.setComments(cards);
 
 const filterModel = new FilterModel();
 
-const header = document.querySelector('.header');
-
-renderTemplate(header, new HeaderProfileView(cards));
-
-const main = document.querySelector('.main');
-
-const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel);
+const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel, api);
 const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
 filterPresenter.init();
 boardPresenter.init();
 
-// Отрисовка статистики в подвале сайта
-
-const footerStatistics = document.querySelector('.footer__statistics');
-
-renderTemplate(footerStatistics, new FooterStatView(cards.length).getElement());
-
+api.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+    renderTemplate(header, new HeaderProfileView(films));
+    renderTemplate(footerStatistics, new FooterStatView(films.length));
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });

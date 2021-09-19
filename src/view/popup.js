@@ -60,6 +60,8 @@ const createPopup = (data) => {
     isEmojiName,
   } = data;
 
+  console.log(comments);
+
   const createComments = (commentsArray) => {
     const arrayComments = commentsArray.map((comment) => getComment(comment));
     return arrayComments;
