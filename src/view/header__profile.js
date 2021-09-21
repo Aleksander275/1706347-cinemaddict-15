@@ -16,6 +16,16 @@ export default class HeaderProfile extends AbstractView {
     this._filmsModel = filmsModel;
   }
 
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+  }
+
   getTemplate () {
     return createHeaderProfile(this._filmsModel);
   }

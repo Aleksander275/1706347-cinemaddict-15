@@ -22,9 +22,11 @@ const filmsModel = new FilmsModel();
 
 const commentsModel = new CommentsModel(api);
 
+const headerComponent = new HeaderProfileView(filmsModel);
+
 const filterModel = new FilterModel();
 
-const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel, api);
+const boardPresenter = new BoardPresenter(main, filmsModel, filterModel, commentsModel, api, headerComponent);
 const filterPresenter = new FilterPresenter(main, filterModel, filmsModel);
 
 filterPresenter.init();
@@ -35,7 +37,7 @@ api.getFilms()
     const comments = await Promise.all(api.getAllComments(films));
     commentsModel.setComments(UpdateType.INIT, comments);
     filmsModel.setFilms(UpdateType.INIT, films);
-    renderTemplate(header, new HeaderProfileView(filmsModel));
+    renderTemplate(header, headerComponent);
     renderTemplate(footerStatistics, new FooterStatView(films.length));
   })
   .catch(() => {

@@ -13,7 +13,7 @@ import { SortType, UpdateType, UserAction, StatusFilm, FilterType, StatsFilterTy
 const CARD_COUNT_STEP = 5;
 
 export default class Board {
-  constructor (boardContainer, filmsModel, filterModel, commentsModel, api) {
+  constructor (boardContainer, filmsModel, filterModel, commentsModel, api, headerComponent) {
     this._boardContainer = boardContainer;
 
     this._filmsModel = filmsModel;
@@ -24,6 +24,7 @@ export default class Board {
 
     this._filterType = FilterType.ALL;
     this._statsFilterType = StatsFilterType.ALL;
+    this._headerComponent = headerComponent;
     this._boardComponent = null;
     this._sortComponent = null;
     this._filmListComponent = null;
@@ -121,6 +122,7 @@ export default class Board {
     switch (updateType) {
       case UpdateType.PATCH: {
         this._filmsPresenters.get(data.id).init(data);
+        this._headerComponent.updateElement();
         this._clearBoard();
         this._renderSort();
         this._renderBoard();
