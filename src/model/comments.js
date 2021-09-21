@@ -1,14 +1,16 @@
 import AbstractObserver from '../utils/abstract-observer.js';
 
 export default class Comments extends AbstractObserver {
-  constructor () {
+  constructor (api) {
     super();
     this._comments = {};
+    this._api = api;
   }
 
   setComments(updateType, cards) {
-    this._comments = cards.reduce((acc, card) => {
-      acc[card.id] = card.comments;
+    this._comments = cards.reduce((acc, c) => {
+      const [[key, value]] = Object.entries((c));
+      acc[key] = value;
       return acc;
     }, {});
 

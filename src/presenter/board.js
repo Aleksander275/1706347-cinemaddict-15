@@ -54,6 +54,7 @@ export default class Board {
     this._commentsModel.addObserver(this._handleModelEvent);
 
     this._renderSort();
+
     this._renderBoard();
   }
 
@@ -88,15 +89,18 @@ export default class Board {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case StatusFilm.TOGGLE_FAVORITE: {
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update)
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
         break;
       }
       case StatusFilm.TOGGLE_HISTORY: {
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update)
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
         break;
       }
       case StatusFilm.TOGGLE_WATCHLIST: {
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update)
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
         break;
       }
       case UserAction.ADD_COMMENT: {
@@ -114,6 +118,9 @@ export default class Board {
     switch (updateType) {
       case UpdateType.PATCH: {
         this._filmsPresenters.get(data.id).init(data);
+        this._clearBoard();
+        this._renderSort();
+        this._renderBoard();
         break;}
       case UpdateType.MINOR: {
         this._clearBoard();
@@ -135,6 +142,7 @@ export default class Board {
       case UpdateType.INIT: {
         this._isLoading = false;
         remove(this._loadingComponent);
+        remove(this._boardComponent);
         this._renderBoard();
         break;
       }

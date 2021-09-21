@@ -20,7 +20,7 @@ const api = new Api(END_POINT, AUTHORIZATION);
 
 const filmsModel = new FilmsModel();
 
-const commentsModel = new CommentsModel();
+const commentsModel = new CommentsModel(api);
 
 const filterModel = new FilterModel();
 
@@ -31,7 +31,9 @@ filterPresenter.init();
 boardPresenter.init();
 
 api.getFilms()
-  .then((films) => {
+  .then(async (films) => {
+    const comments = await Promise.all(api.getAllComments(films));
+    commentsModel.setComments(UpdateType.INIT, comments);
     filmsModel.setFilms(UpdateType.INIT, films);
     renderTemplate(header, new HeaderProfileView(films));
     renderTemplate(footerStatistics, new FooterStatView(films.length));
@@ -39,3 +41,5 @@ api.getFilms()
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
   });
+
+

@@ -66,7 +66,7 @@ export default class Film {
     this._film.getElement().addEventListener('click', ((evt) => {
       evt.preventDefault();
       if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-        const popup = new PopupView(this._card, this._commentsModel);
+        const popup = new PopupView(this._card, this._commentsModel, this._api);
         popup.closePopup();
         popup.setClickHandler(this._handlerFilmDescClick);
         popup.handlerAddComment();

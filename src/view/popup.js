@@ -1,6 +1,6 @@
 import SmartView from './smart.js';
 import { UpdateType } from '../utils/const.js';
-import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 import he from 'he';
 
 const ESC = 27;
@@ -13,31 +13,33 @@ const getGenre = (array) => {
   return arrayGenre;
 };
 
-const getComment = (comment) => {
+const getComment = (newComment) => {
   const {
     id,
-    text,
+    comment,
     emotion,
     author,
-    commentDate,
-  } = comment;
+    date,
+  } = newComment;
+
+  const getDate = () => dayjs(date).format('YYYY/MM/DD HH:mm');
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : ''}
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${commentDate}</span>
+        <span class="film-details__comment-day">${getDate()}</span>
         <button data-id="${id}" class="film-details__comment-delete">Delete</button>
       </p>
     </div>
     </li>`;
 };
 
-const createPopup = (data) => {
+const createPopup = (data, comments) => {
   const {
     poster,
     title,
@@ -52,7 +54,7 @@ const createPopup = (data) => {
     runtime,
     genres,
     description,
-    comments,
+    commentsId,
     isWatchlist,
     isHistory,
     isFavorite,
@@ -60,12 +62,7 @@ const createPopup = (data) => {
     isEmojiName,
   } = data;
 
-  console.log(comments);
-
-  const createComments = (commentsArray) => {
-    const arrayComments = commentsArray.map((comment) => getComment(comment));
-    return arrayComments;
-  };
+  const createComments = (commentsArray) => commentsArray.map((comment) => getComment(comment));
 
   const createContainerComments = (hasComments) => hasComments
     ? `<ul class="film-details__comments-list">
@@ -163,8 +160,8 @@ const createPopup = (data) => {
 
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          ${createContainerComments(Boolean(comments.length))}
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsId.length}</span></h3>
+          ${createContainerComments(Boolean(commentsId.length))}
 
           <div class="film-details__new-comment">
             <div class="film-details__add-emoji-label">
@@ -205,11 +202,13 @@ const createPopup = (data) => {
 };
 
 export default class Popup extends SmartView {
-  constructor (card, commentsModel) {
+  constructor (card, commentsModel, api) {
     super();
 
     this._commentsModel = commentsModel;
     this._data = Popup.parseCardToData(card);
+    this._comments = this._commentsModel.getCommentsById(this._data.id);
+    this._api = api;
 
     this._emojiInputHandler = this._emojiInputHandler.bind(this);
     this._textInputHandler = this._textInputHandler.bind(this);
@@ -252,7 +251,7 @@ export default class Popup extends SmartView {
   }
 
   handlerRemoveComment () {
-    if (this._data.comments.length) {
+    if (this._data.commentsId.length) {
       this.getElement().querySelector('.film-details__comments-list').addEventListener('click', (evt) => {
         evt.preventDefault();
         if (evt.target.classList.contains('film-details__comment-delete')) {
@@ -264,21 +263,23 @@ export default class Popup extends SmartView {
   }
 
   _removeComment (commentId) {
-    this._commentsModel.deleteComment(UpdateType.MINOR, commentId, this._data.id);
-    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id)});
+    this._api.deleteComment(commentId).then(() => {
+      this._commentsModel.deleteComment(UpdateType.MINOR, commentId, this._data.id);
+      this.updateData({comments: this._commentsModel.getCommentsById(this._data.id)});
+    });
   }
 
   _addComment (text) {
-    this._commentsModel.addComment(UpdateType.MINOR, {
-      [this._data.id]: {
-        id: uuidv4(),
-        text: he.encode(text),
-        emotion: this._emojiName,
-      },
-    });
-
-    this._emojiName = null;
-    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null});
+    this._api.addComment({
+      comment: he.encode(text),
+      emotion: this._emojiName,
+    }, this._data.id)
+      .then((response) => {
+        const comment = response.comments.pop();
+        this._commentsModel.addComment(UpdateType.MINOR, {[this._data.id]: comment});
+        this._emojiName = null;
+        this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null});
+      });
   }
 
   _emojiInputHandler (evt) {
@@ -326,7 +327,7 @@ export default class Popup extends SmartView {
   }
 
   getTemplate () {
-    return createPopup(this._data);
+    return createPopup(this._data, this._comments);
   }
 
   static parseCardToData (card) {
