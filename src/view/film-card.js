@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 import dayjs from 'dayjs';
 
-const createFilmCard = (card) => {
+const createFilmCard = (card, comments) => {
   const {
     id,
     poster,
@@ -11,7 +11,6 @@ const createFilmCard = (card) => {
     runtime,
     genres,
     description,
-    commentsId,
     isWatchlist,
     isHistory,
     isFavorite,
@@ -44,7 +43,7 @@ const createFilmCard = (card) => {
     </p>
     <img src="${poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${description}</p>
-    <a class="film-card__comments">${commentsId.length}</a>
+    <a class="film-card__comments">${comments.length}</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item ${watchlistClassName}" type="button">Add to watchlist</button>
       <button class="film-card__controls-item ${historyClassName}" type="button">Mark as watched</button>
@@ -54,14 +53,16 @@ const createFilmCard = (card) => {
 };
 
 export default class FilmCard extends AbstractView {
-  constructor (card) {
+  constructor (card, commentsModel) {
     super();
 
+    this._commentsModel = commentsModel;
     this._card = card;
+    this._comments = this._commentsModel.getCommentsById(this._card.id);
   }
 
   getTemplate () {
-    return createFilmCard(this._card);
+    return createFilmCard(this._card, this._comments);
   }
 
   setFilmClickHandler (handlerElementClick) {

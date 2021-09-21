@@ -86,21 +86,24 @@ export default class Board {
     this._renderBoard();
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, shake) {
     switch (actionType) {
       case StatusFilm.TOGGLE_FAVORITE: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .catch(() => shake());
         break;
       }
       case StatusFilm.TOGGLE_HISTORY: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .catch(() => shake());
         break;
       }
       case StatusFilm.TOGGLE_WATCHLIST: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response));
+          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .catch(() => shake());
         break;
       }
       case UserAction.ADD_COMMENT: {

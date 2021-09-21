@@ -35,7 +35,7 @@ api.getFilms()
     const comments = await Promise.all(api.getAllComments(films));
     commentsModel.setComments(UpdateType.INIT, comments);
     filmsModel.setFilms(UpdateType.INIT, films);
-    renderTemplate(header, new HeaderProfileView(films));
+    renderTemplate(header, new HeaderProfileView(filmsModel));
     renderTemplate(footerStatistics, new FooterStatView(films.length));
   })
   .catch(() => {
