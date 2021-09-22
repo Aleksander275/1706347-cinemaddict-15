@@ -43,7 +43,6 @@ export default class Film {
 
   init (card) {
     this._card = card;
-
     const prevFilmComponent = this._film;
 
     this._film = new FilmCardView(card, this._commentsModel);
@@ -90,7 +89,7 @@ export default class Film {
   _handleFavoriteClick() {
     this._changeData(
       StatusFilm.TOGGLE_FAVORITE,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -105,7 +104,7 @@ export default class Film {
   _handleHistoryClick () {
     this._changeData(
       StatusFilm.TOGGLE_HISTORY,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -120,7 +119,7 @@ export default class Film {
   _handleWatchlistClick () {
     this._changeData(
       StatusFilm.TOGGLE_WATCHLIST,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       Object.assign(
         {},
         this._card,
@@ -132,7 +131,7 @@ export default class Film {
     );
   }
 
-  _handleFilmDescFavoriteClick(callback) {
+  _handleFilmDescFavoriteClick(callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_FAVORITE,
       UpdateType.PATCH,
@@ -144,10 +143,11 @@ export default class Film {
         },
       ),
       callback,
+      method,
     );
   }
 
-  _handleFilmDescHistoryClick (callback) {
+  _handleFilmDescHistoryClick (callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_HISTORY,
       UpdateType.PATCH,
@@ -159,10 +159,11 @@ export default class Film {
         },
       ),
       callback,
+      method,
     );
   }
 
-  _handleFilmDescWatchlistClick (callback) {
+  _handleFilmDescWatchlistClick (callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_WATCHLIST,
       UpdateType.PATCH,
@@ -174,6 +175,7 @@ export default class Film {
         },
       ),
       callback,
+      method,
     );
   }
 

@@ -8,7 +8,7 @@ import BoardView from '../view/board.js';
 import StatisticView from '../view/statistic.js';
 import { filter } from '../utils/filters.js';
 import { renderTemplate, remove, sortRating, sortDate, watchingDate } from '../utils/utils.js';
-import { SortType, UpdateType, UserAction, StatusFilm, FilterType, StatsFilterType } from '../utils/const.js';
+import { SortType, UpdateType, StatusFilm, FilterType, StatsFilterType } from '../utils/const.js';
 
 const CARD_COUNT_STEP = 5;
 
@@ -87,32 +87,39 @@ export default class Board {
     this._renderBoard();
   }
 
-  _handleViewAction(actionType, updateType, update, shake) {
+  _handleViewAction(actionType, updateType, update, shake, method) {
     switch (actionType) {
       case StatusFilm.TOGGLE_FAVORITE: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .then((response) =>  {
+            this._filmsModel.updateFilm(updateType, response);
+            if (method) {
+              method();
+            }
+          })
           .catch(() => shake());
         break;
       }
       case StatusFilm.TOGGLE_HISTORY: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .then((response) =>  {
+            this._filmsModel.updateFilm(updateType, response);
+            if (method) {
+              method();
+            }
+          })
           .catch(() => shake());
         break;
       }
       case StatusFilm.TOGGLE_WATCHLIST: {
         this._api.updateFilm(update)
-          .then((response) =>  this._filmsModel.updateFilm(updateType, response))
+          .then((response) =>  {
+            this._filmsModel.updateFilm(updateType, response);
+            if (method) {
+              method();
+            }
+          })
           .catch(() => shake());
-        break;
-      }
-      case UserAction.ADD_COMMENT: {
-        this._filmsModel.addComment(updateType, update);
-        break;
-      }
-      case UserAction.DELETE_COMMENT: {
-        this._filmsModel.deleteComment(updateType, update);
         break;
       }
     }
@@ -123,9 +130,6 @@ export default class Board {
       case UpdateType.PATCH: {
         this._filmsPresenters.get(data.id).init(data);
         this._headerComponent.updateElement();
-        this._clearBoard();
-        this._renderSort();
-        this._renderBoard();
         break;}
       case UpdateType.MINOR: {
         this._clearBoard();
@@ -260,8 +264,8 @@ export default class Board {
       return;
     }
 
-    this._boardComponent = new ContentView;
-    this._filmListComponent = new BoardView;
+    this._boardComponent = new ContentView();
+    this._filmListComponent = new BoardView();
     const filmList = this._boardComponent.getElement().querySelector('.films-list');
     renderTemplate(this._boardContainer, this._boardComponent);
     renderTemplate(filmList, this._filmListComponent);
@@ -301,7 +305,7 @@ export default class Board {
       this._renderedFilmCount = CARD_COUNT_STEP;
     } else {
       const filmCount = this._getFilms().length;
-      this._renderedTaskCount = Math.min(filmCount, this._renderedFilmCount);
+      this._renderedFilmCount = Math.min(filmCount, this._renderedFilmCount);
     }
 
     if (resetSortType) {

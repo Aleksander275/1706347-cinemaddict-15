@@ -8,10 +8,7 @@ const ENTER = 13;
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
-const getGenre = (array) => {
-  const arrayGenre = array.map((genre) => createGenre(genre));
-  return arrayGenre;
-};
+const getGenre = (genres) => genres.map((genre) => createGenre(genre));
 
 const getComment = (newComment, isDeleting, isDisabled) => {
   const {
@@ -63,7 +60,7 @@ const createPopup = (data, comments) => {
     isDisabled,
   } = data;
 
-  const createComments = (commentsArray) => commentsArray.map((comment) => getComment(comment, isDeleting, isDisabled));
+  const createComments = (newComments) => newComments.map((comment) => getComment(comment, isDeleting, isDisabled));
 
   const createContainerComments = (hasComments) => hasComments
     ? `<ul class="film-details__comments-list">
@@ -226,8 +223,7 @@ export default class Popup extends SmartView {
     Object.keys(handlerElementClick).forEach((key) => {
       this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', () => {
         const {flag, method} = handlerElementClick[key];
-        method(this._newShake);
-        this.updateData({[flag]: !this._data[flag]});
+        method(this._newShake, () => this.updateData({[flag]: !this._data[flag]}));
       });
     });
   }
