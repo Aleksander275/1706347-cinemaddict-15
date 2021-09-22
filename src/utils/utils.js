@@ -78,20 +78,20 @@ const sortRating = (filmA, filmB) => {
   return 0;
 };
 
-const getTopGenres = (arrayFilms, isSortCount) => {
-  const genres = arrayFilms.reduce((acc, element) => {
+const getTopGenres = (films, isSortCount) => {
+  const genres = films.reduce((acc, element) => {
     acc.push(...element.genres);
     return acc;
   }, []);
 
   const uniqueGenres = [...new Set(genres)];
 
-  const getCountGenres = (sett, array) => {
+  const getCountGenres = (sett, allGenres) => {
     const dataGenres = [];
 
     sett.forEach((element) => dataGenres.push({
       genres: element,
-      count: array.filter((elem) => elem === element).length}));
+      count: allGenres.filter((elem) => elem === element).length}));
 
     return dataGenres;
   };
@@ -112,19 +112,21 @@ const getTopGenres = (arrayFilms, isSortCount) => {
   return sortGenres;
 };
 
-const getProfile = (arrayHistory) => {
+const getProfile = (filtredFilms) => {
 
-  if (arrayHistory.length === 0) {
-    return '';
-  }
-  if (arrayHistory.length > 0 && arrayHistory.length <= 10) {
-    return 'novice';
-  }
-  if (arrayHistory.length > 10 && arrayHistory.length <= 20) {
-    return 'fan';
-  }
-  if (arrayHistory.length > 20) {
-    return 'movie buff';
+  switch (true) {
+    case filtredFilms.length === 0: {
+      return '';
+    }
+    case filtredFilms.length > 0 && filtredFilms.length <= 10: {
+      return 'novice';
+    }
+    case filtredFilms.length > 10 && filtredFilms.length <= 20: {
+      return 'fan';
+    }
+    case filtredFilms.length > 20: {
+      return 'movie buff';
+    }
   }
 };
 
@@ -139,16 +141,21 @@ const getTotalDuration = (data) => {
 
 const watchingDate = (date, sortType) => {
   switch (sortType) {
-    case StatsFilterType.ALL:
+    case StatsFilterType.ALL: {
       return date;
-    case StatsFilterType.YEAR:
+    }
+    case StatsFilterType.YEAR: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -31536000000);
-    case StatsFilterType.MONTH:
+    }
+    case StatsFilterType.MONTH: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -2592000000);
-    case StatsFilterType.WEEK:
+    }
+    case StatsFilterType.WEEK: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -604800000);
-    case StatsFilterType.TODAY:
+    }
+    case StatsFilterType.TODAY: {
       return date = date.filter((film) => dayjs(film.watchingDate).diff() > -86400000);
+    }
   }
 };
 

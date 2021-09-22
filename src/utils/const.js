@@ -28,6 +28,7 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   STATS: 'STATS',
+  INIT: 'INIT',
 };
 
 const FilterType = {
@@ -38,4 +39,6 @@ const FilterType = {
   STATS: 'stats',
 };
 
-export { SortType, UserAction, UpdateType, StatusFilm, FilterType, StatsFilterType };
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+export { SortType, UserAction, UpdateType, StatusFilm, FilterType, StatsFilterType, SHAKE_ANIMATION_TIMEOUT };

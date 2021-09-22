@@ -1,31 +1,36 @@
 import FilmCardView from '../view/film-card.js';
 import PopupView from '../view/popup.js';
 import { renderTemplate, remove, replace } from '../utils/utils.js';
-import { UpdateType, StatusFilm } from '../utils/const';
+import { UpdateType, StatusFilm, SHAKE_ANIMATION_TIMEOUT } from '../utils/const';
 
 export default class Film {
-  constructor (filmContainer, changeData, commentsModel) {
+  constructor (filmContainer, changeData, commentsModel, api) {
     this._filmContainer = filmContainer;
     this._changeData = changeData;
     this._commentsModel = commentsModel;
+    this._api = api;
     this._film = null;
 
+    this._shake = this._shake.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleHistoryClick = this._handleHistoryClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
+    this._handleFilmDescFavoriteClick = this._handleFilmDescFavoriteClick.bind(this);
+    this._handleFilmDescHistoryClick = this._handleFilmDescHistoryClick.bind(this);
+    this._handleFilmDescWatchlistClick = this._handleFilmDescWatchlistClick.bind(this);
 
     this._handlerFilmDescClick = {
       'favorite': {
         flag: 'isFavorite',
-        method: this._handleFavoriteClick,
+        method: this._handleFilmDescFavoriteClick,
       },
       'watched': {
         flag: 'isHistory',
-        method: this._handleHistoryClick,
+        method: this._handleFilmDescHistoryClick,
       },
       'watchlist': {
         flag: 'isWatchlist',
-        method: this._handleWatchlistClick,
+        method: this._handleFilmDescWatchlistClick,
       },
     };
 
@@ -38,10 +43,9 @@ export default class Film {
 
   init (card) {
     this._card = card;
-
     const prevFilmComponent = this._film;
 
-    this._film = new FilmCardView(card);
+    this._film = new FilmCardView(card, this._commentsModel);
     this._film.setFilmClickHandler(this._handlerFilmClick);
     this._renderDescFilm();
 
@@ -65,7 +69,7 @@ export default class Film {
     this._film.getElement().addEventListener('click', ((evt) => {
       evt.preventDefault();
       if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-        const popup = new PopupView(this._card, this._commentsModel);
+        const popup = new PopupView(this._card, this._commentsModel, this._api);
         popup.closePopup();
         popup.setClickHandler(this._handlerFilmDescClick);
         popup.handlerAddComment();
@@ -85,6 +89,51 @@ export default class Film {
   _handleFavoriteClick() {
     this._changeData(
       StatusFilm.TOGGLE_FAVORITE,
+      UpdateType.MINOR,
+      Object.assign(
+        {},
+        this._card,
+        {
+          isFavorite: !this._card.isFavorite,
+        },
+      ),
+      this._shake,
+    );
+  }
+
+  _handleHistoryClick () {
+    this._changeData(
+      StatusFilm.TOGGLE_HISTORY,
+      UpdateType.MINOR,
+      Object.assign(
+        {},
+        this._card,
+        {
+          isHistory: !this._card.isHistory,
+        },
+      ),
+      this._shake,
+    );
+  }
+
+  _handleWatchlistClick () {
+    this._changeData(
+      StatusFilm.TOGGLE_WATCHLIST,
+      UpdateType.MINOR,
+      Object.assign(
+        {},
+        this._card,
+        {
+          isWatchlist: !this._card.isWatchlist,
+        },
+      ),
+      this._shake,
+    );
+  }
+
+  _handleFilmDescFavoriteClick(callback, method) {
+    this._changeData(
+      StatusFilm.TOGGLE_FAVORITE,
       UpdateType.PATCH,
       Object.assign(
         {},
@@ -93,10 +142,12 @@ export default class Film {
           isFavorite: !this._card.isFavorite,
         },
       ),
+      callback,
+      method,
     );
   }
 
-  _handleHistoryClick () {
+  _handleFilmDescHistoryClick (callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_HISTORY,
       UpdateType.PATCH,
@@ -107,10 +158,12 @@ export default class Film {
           isHistory: !this._card.isHistory,
         },
       ),
+      callback,
+      method,
     );
   }
 
-  _handleWatchlistClick () {
+  _handleFilmDescWatchlistClick (callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_WATCHLIST,
       UpdateType.PATCH,
@@ -121,7 +174,16 @@ export default class Film {
           isWatchlist: !this._card.isWatchlist,
         },
       ),
+      callback,
+      method,
     );
+  }
+
+  _shake() {
+    this._film.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this._film.getElement().style.animation = '';
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
 

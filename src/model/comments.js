@@ -1,16 +1,20 @@
 import AbstractObserver from '../utils/abstract-observer.js';
 
 export default class Comments extends AbstractObserver {
-  constructor () {
+  constructor (api) {
     super();
     this._comments = {};
+    this._api = api;
   }
 
-  setComments(cards) {
-    this._comments = cards.reduce((acc, card) => {
-      acc[card.id] = card.comments;
+  setComments(updateType, cards) {
+    this._comments = cards.reduce((acc, c) => {
+      const [[key, value]] = Object.entries((c));
+      acc[key] = value;
       return acc;
     }, {});
+
+    this._notify(updateType);
   }
 
   getCommentsById(id) {
@@ -28,5 +32,29 @@ export default class Comments extends AbstractObserver {
     const filmIndex = this._comments[filmId].findIndex(({id}) => id === commentId);
     this._comments[filmId].splice(filmIndex, 1);
     this._notify(updateType);
+  }
+
+  static adaptToClient(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+
+      },
+    );
+
+    return adaptedFilm;
+  }
+
+  static adaptToServer(film) {
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+
+      },
+    );
+
+    return adaptedFilm;
   }
 }

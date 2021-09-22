@@ -1,22 +1,32 @@
 import AbstractView from './abstract.js';
 import { getProfile } from '../utils/utils.js';
 
-const createHeaderProfile = (cards) => {
-  const arrayHistory = cards.filter((card) => card.isHistory);
+const createHeaderProfile = (filmsModel) => {
+  const filtredFilms = filmsModel.getFilms().filter((card) => card.isHistory);
 
   return `<section class="header__profile profile">
-    <p class="profile__rating">${getProfile(arrayHistory)}</p>
+    <p class="profile__rating">${getProfile(filtredFilms)}</p>
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
     </section>`;
 };
 
 export default class HeaderProfile extends AbstractView {
-  constructor (cards) {
+  constructor (filmsModel) {
     super();
-    this._cards = cards;
+    this._filmsModel = filmsModel;
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
   }
 
   getTemplate () {
-    return createHeaderProfile(this._cards);
+    return createHeaderProfile(this._filmsModel);
   }
 }

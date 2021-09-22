@@ -1,6 +1,6 @@
 import SmartView from './smart.js';
-import { UpdateType } from '../utils/const.js';
-import { v4 as uuidv4 } from 'uuid';
+import { UpdateType, SHAKE_ANIMATION_TIMEOUT } from '../utils/const.js';
+import dayjs from 'dayjs';
 import he from 'he';
 
 const ESC = 27;
@@ -8,36 +8,35 @@ const ENTER = 13;
 
 const createGenre = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
-const getGenre = (array) => {
-  const arrayGenre = array.map((genre) => createGenre(genre));
-  return arrayGenre;
-};
+const getGenre = (genres) => genres.map((genre) => createGenre(genre));
 
-const getComment = (comment) => {
+const getComment = (newComment, isDeleting, isDisabled) => {
   const {
     id,
-    text,
+    comment,
     emotion,
     author,
-    commentDate,
-  } = comment;
+    date,
+  } = newComment;
+
+  const getDate = () => dayjs(date).format('YYYY/MM/DD HH:mm');
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       ${emotion ? `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : ''}
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${commentDate}</span>
-        <button data-id="${id}" class="film-details__comment-delete">Delete</button>
+        <span class="film-details__comment-day">${getDate()}</span>
+        <button data-id="${id}" class="film-details__comment-delete" ${isDisabled ? 'disabled': ''}>${isDeleting ? 'Deleting...': 'Delete'}</button>
       </p>
     </div>
     </li>`;
 };
 
-const createPopup = (data) => {
+const createPopup = (data, comments) => {
   const {
     poster,
     title,
@@ -52,18 +51,16 @@ const createPopup = (data) => {
     runtime,
     genres,
     description,
-    comments,
     isWatchlist,
     isHistory,
     isFavorite,
     isEmoji,
     isEmojiName,
+    isDeleting,
+    isDisabled,
   } = data;
 
-  const createComments = (commentsArray) => {
-    const arrayComments = commentsArray.map((comment) => getComment(comment));
-    return arrayComments;
-  };
+  const createComments = (newComments) => newComments.map((comment) => getComment(comment, isDeleting, isDisabled));
 
   const createContainerComments = (hasComments) => hasComments
     ? `<ul class="film-details__comments-list">
@@ -170,26 +167,26 @@ const createPopup = (data) => {
             </div>
 
             <label class="film-details__comment-label">
-              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" autocomplete="off"></textarea>
+              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" autocomplete="off" ${isDisabled ? 'disabled': ''}></textarea>
             </label>
 
             <div class="film-details__emoji-list">
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${isDisabled ? 'disabled': ''}>
               <label class="film-details__emoji-label" for="emoji-smile">
                 <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
               </label>
 
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${isDisabled ? 'disabled': ''}>
               <label class="film-details__emoji-label" for="emoji-sleeping">
                 <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
               </label>
 
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${isDisabled ? 'disabled': ''}>
               <label class="film-details__emoji-label" for="emoji-puke">
                 <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
               </label>
 
-              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+              <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${isDisabled ? 'disabled': ''}>
               <label class="film-details__emoji-label" for="emoji-angry">
                 <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
               </label>
@@ -203,12 +200,16 @@ const createPopup = (data) => {
 };
 
 export default class Popup extends SmartView {
-  constructor (card, commentsModel) {
+  constructor (card, commentsModel, api) {
     super();
 
     this._commentsModel = commentsModel;
     this._data = Popup.parseCardToData(card);
+    this._comments = this._commentsModel.getCommentsById(this._data.id);
+    this._api = api;
 
+    this._shake = this._shake.bind(this);
+    this._newShake = this._newShake.bind(this);
     this._emojiInputHandler = this._emojiInputHandler.bind(this);
     this._textInputHandler = this._textInputHandler.bind(this);
     this.handlerAddComment = this.handlerAddComment.bind(this);
@@ -222,8 +223,7 @@ export default class Popup extends SmartView {
     Object.keys(handlerElementClick).forEach((key) => {
       this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', () => {
         const {flag, method} = handlerElementClick[key];
-        method();
-        this.updateData({[flag]: !this._data[flag]});
+        method(this._newShake, () => this.updateData({[flag]: !this._data[flag]}));
       });
     });
   }
@@ -250,7 +250,7 @@ export default class Popup extends SmartView {
   }
 
   handlerRemoveComment () {
-    if (this._data.comments.length) {
+    if (this._data.commentsId.length) {
       this.getElement().querySelector('.film-details__comments-list').addEventListener('click', (evt) => {
         evt.preventDefault();
         if (evt.target.classList.contains('film-details__comment-delete')) {
@@ -262,21 +262,38 @@ export default class Popup extends SmartView {
   }
 
   _removeComment (commentId) {
-    this._commentsModel.deleteComment(UpdateType.MINOR, commentId, this._data.id);
-    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id)});
+    this.updateData({isDisabled: true, isDeleting: true});
+
+    this._api.deleteComment(commentId)
+      .then(() => {
+        this._commentsModel.deleteComment(UpdateType.MINOR, commentId, this._data.id);
+        this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isDisabled: false, isDeleting: false});
+      })
+      .catch(() => {
+        this._shake(() => {
+          this.updateData({isEmoji: false, isTextComment: '', isEmojiName: null, isDisabled: false, isDeleting: false});
+        });
+      });
   }
 
   _addComment (text) {
-    this._commentsModel.addComment(UpdateType.MINOR, {
-      [this._data.id]: {
-        id: uuidv4(),
-        text: he.encode(text),
-        emotion: this._emojiName,
-      },
-    });
+    this.updateData({isDisabled: true});
 
-    this._emojiName = null;
-    this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null});
+    this._api.addComment({
+      comment: he.encode(text),
+      emotion: this._emojiName,
+    }, this._data.id)
+      .then((response) => {
+        const comment = response.comments.pop();
+        this._commentsModel.addComment(UpdateType.MINOR, {[this._data.id]: comment});
+        this._emojiName = null;
+        this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null, isDisabled: false, isDeleting: false});
+      })
+      .catch(() => {
+        this._shake(() => {
+          this.updateData({isEmoji: false, isTextComment: '', isEmojiName: null, isDisabled: false, isDeleting: false});
+        });
+      });
   }
 
   _emojiInputHandler (evt) {
@@ -324,7 +341,22 @@ export default class Popup extends SmartView {
   }
 
   getTemplate () {
-    return createPopup(this._data);
+    return createPopup(this._data, this._comments);
+  }
+
+  _shake(callback) {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  _newShake() {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   static parseCardToData (card) {
@@ -335,6 +367,8 @@ export default class Popup extends SmartView {
         isEmoji: false,
         isEmojiName: null,
         isTextComment: '',
+        isDeleting: false,
+        isDisabled: false,
       },
     );
   }
@@ -345,6 +379,8 @@ export default class Popup extends SmartView {
     delete data.isEmoji;
     delete data.isEmojiName;
     delete data.isTextComment;
+    delete data.isDeleting;
+    delete data.isDisabled;
 
     return data;
   }
