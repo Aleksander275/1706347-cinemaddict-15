@@ -224,7 +224,11 @@ export default class Popup extends SmartView {
     Object.keys(handlerElementClick).forEach((key) => {
       this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', () => {
         const {flag, method} = handlerElementClick[key];
-        method(this._newShake, () => this.updateData({[flag]: !this._data[flag], scrollPosition: this.getElement().scrollTop}));
+
+        method({[flag]: !this._data[flag]}, this._newShake, () => this.updateData({
+          [flag]: !this._data[flag],
+          scrollPosition: this.getElement().scrollTop,
+        }));
       });
     });
     this.getElement().scrollTop = this._data.scrollPosition;

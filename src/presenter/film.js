@@ -46,6 +46,8 @@ export default class Film {
     const prevFilmComponent = this._film;
 
     this._film = new FilmCardView(card, this._commentsModel);
+    this._popup = new PopupView(this._card, this._commentsModel, this._api);
+    this._popup.setClickHandler(this._handlerFilmDescClick);
     this._film.setFilmClickHandler(this._handlerFilmClick);
     this._renderDescFilm();
 
@@ -69,13 +71,11 @@ export default class Film {
     this._film.getElement().addEventListener('click', ((evt) => {
       evt.preventDefault();
       if (evt.target.classList.contains('film-card__poster') || evt.target.classList.contains('film-card__title') || evt.target.classList.contains('film-card__comments')) {
-        const popup = new PopupView(this._card, this._commentsModel, this._api);
-        popup.closePopup();
-        popup.setClickHandler(this._handlerFilmDescClick);
-        popup.handlerAddComment();
-        popup.handlerRemoveComment();
+        this._popup.closePopup();
+        this._popup.handlerAddComment();
+        this._popup.handlerRemoveComment();
 
-        renderTemplate(document.body, popup.getElement());
+        renderTemplate(document.body, this._popup.getElement());
         document.body.classList.add('hide-overflow');
       }
     }));
@@ -126,49 +126,31 @@ export default class Film {
     );
   }
 
-  _handleFilmDescFavoriteClick(callback, method) {
+  _handleFilmDescFavoriteClick(currentControl, callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_FAVORITE,
       UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._card,
-        {
-          isFavorite: !this._card.isFavorite,
-        },
-      ),
+      {...this._card, ...currentControl},
       callback,
       method,
     );
   }
 
-  _handleFilmDescHistoryClick (callback, method) {
+  _handleFilmDescHistoryClick (currentControl, callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_HISTORY,
       UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._card,
-        {
-          isHistory: !this._card.isHistory,
-        },
-      ),
+      {...this._card, ...currentControl},
       callback,
       method,
     );
   }
 
-  _handleFilmDescWatchlistClick (callback, method) {
+  _handleFilmDescWatchlistClick (currentControl, callback, method) {
     this._changeData(
       StatusFilm.TOGGLE_WATCHLIST,
       UpdateType.PATCH,
-      Object.assign(
-        {},
-        this._card,
-        {
-          isWatchlist: !this._card.isWatchlist,
-        },
-      ),
+      {...this._card,...currentControl},
       callback,
       method,
     );
