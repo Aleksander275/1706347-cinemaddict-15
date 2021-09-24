@@ -39,6 +39,14 @@ const FilterType = {
   STATS: 'stats',
 };
 
+const filmsViewed = {
+  novice: 0,
+  fan: 10,
+  buff: 20,
+};
+
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
-export { SortType, UserAction, UpdateType, StatusFilm, FilterType, StatsFilterType, SHAKE_ANIMATION_TIMEOUT };
+const MINUTES = 60;
+
+export { SortType, UserAction, UpdateType, StatusFilm, FilterType, StatsFilterType, SHAKE_ANIMATION_TIMEOUT, MINUTES, filmsViewed};

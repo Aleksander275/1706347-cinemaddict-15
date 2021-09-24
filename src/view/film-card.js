@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
 import dayjs from 'dayjs';
+import { MINUTES } from '../utils/const.js';
 
 const createFilmCard = (card, comments) => {
   const {
@@ -16,8 +17,8 @@ const createFilmCard = (card, comments) => {
     isFavorite,
   } = card;
 
-  const hoursTime = Math.floor(runtime / 60);
-  const minutesTime = runtime % 60;
+  const hoursTime = Math.floor(runtime / MINUTES);
+  const minutesTime = runtime % MINUTES;
 
   const generateDate = () => dayjs(date).format('YYYY');
 

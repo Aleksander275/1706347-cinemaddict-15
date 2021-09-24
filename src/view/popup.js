@@ -60,7 +60,7 @@ const createPopup = (data, comments) => {
     isDisabled,
   } = data;
 
-  const createComments = (newComments) => newComments.map((comment) => getComment(comment, isDeleting, isDisabled));
+  const createComments = (newComments) => newComments.map((comment) => getComment(comment, isDeleting, isDisabled)).join(' ');
 
   const createContainerComments = (hasComments) => hasComments
     ? `<ul class="film-details__comments-list">
@@ -223,9 +223,10 @@ export default class Popup extends SmartView {
     Object.keys(handlerElementClick).forEach((key) => {
       this.getElement().querySelector(`.film-details__control-button--${key}`).addEventListener('click', () => {
         const {flag, method} = handlerElementClick[key];
-        method(this._newShake, () => this.updateData({[flag]: !this._data[flag]}));
+        method(this._newShake, () => this.updateData({[flag]: !this._data[flag], scrollPosition: this.getElement().scrollTop}));
       });
     });
+    this.getElement().scrollTop = this._data.scrollPosition;
   }
 
   restoreHandlers() {
@@ -250,7 +251,7 @@ export default class Popup extends SmartView {
   }
 
   handlerRemoveComment () {
-    if (this._data.commentsId.length) {
+    if (this._commentsModel.getCommentsById(this._data.id).length) {
       this.getElement().querySelector('.film-details__comments-list').addEventListener('click', (evt) => {
         evt.preventDefault();
         if (evt.target.classList.contains('film-details__comment-delete')) {
@@ -262,12 +263,14 @@ export default class Popup extends SmartView {
   }
 
   _removeComment (commentId) {
-    this.updateData({isDisabled: true, isDeleting: true});
+    this.updateData({isDisabled: true, isDeleting: true, scrollPosition: this.getElement().scrollTop});
+    this.getElement().scrollTop = this._data.scrollPosition;
 
     this._api.deleteComment(commentId)
       .then(() => {
         this._commentsModel.deleteComment(UpdateType.MINOR, commentId, this._data.id);
         this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isDisabled: false, isDeleting: false});
+        this.getElement().scrollTop = this._data.scrollPosition;
       })
       .catch(() => {
         this._shake(() => {
@@ -278,6 +281,7 @@ export default class Popup extends SmartView {
 
   _addComment (text) {
     this.updateData({isDisabled: true});
+    this.getElement().scrollTop = this._data.scrollPosition;
 
     this._api.addComment({
       comment: he.encode(text),
@@ -288,6 +292,7 @@ export default class Popup extends SmartView {
         this._commentsModel.addComment(UpdateType.MINOR, {[this._data.id]: comment});
         this._emojiName = null;
         this.updateData({comments: this._commentsModel.getCommentsById(this._data.id), isEmoji: false, isTextComment: '', isEmojiName: null, isDisabled: false, isDeleting: false});
+        this.getElement().scrollTop = this._data.scrollPosition;
       })
       .catch(() => {
         this._shake(() => {
@@ -367,22 +372,11 @@ export default class Popup extends SmartView {
         isEmoji: false,
         isEmojiName: null,
         isTextComment: '',
+        scrollPosition: null,
         isDeleting: false,
         isDisabled: false,
       },
     );
-  }
-
-  static parseDataToCard(data) {
-    data = Object.assign({}, data);
-
-    delete data.isEmoji;
-    delete data.isEmojiName;
-    delete data.isTextComment;
-    delete data.isDeleting;
-    delete data.isDisabled;
-
-    return data;
   }
 
   removeElement () {

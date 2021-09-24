@@ -2,7 +2,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
 import { getTopGenres, getTotalDuration, getProfile } from '../utils/utils.js';
-import { StatsFilterType } from '../utils/const.js';
+import { StatsFilterType, MINUTES } from '../utils/const.js';
 
 const renderChart = (statisticCtx, data) => {
   const count = getTopGenres(data, true);
@@ -67,8 +67,8 @@ const renderChart = (statisticCtx, data) => {
 };
 
 const createStatistic = (currentFilterType = 'all-time' ,data) => {
-  const hoursTime = Math.floor(getTotalDuration(data) / 60);
-  const minutesTime = getTotalDuration(data) % 60;
+  const hoursTime = Math.floor(getTotalDuration(data) / MINUTES);
+  const minutesTime = getTotalDuration(data) % MINUTES;
 
   return `<section class="statistic">
     <p class="statistic__rank">

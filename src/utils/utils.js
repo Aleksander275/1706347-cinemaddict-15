@@ -1,5 +1,5 @@
 import Abstract from '../view/abstract.js';
-import { StatsFilterType } from './const.js';
+import { StatsFilterType, filmsViewed } from './const.js';
 import dayjs from 'dayjs';
 
 const renderTemplate = (container, element, position = true) => {
@@ -115,16 +115,16 @@ const getTopGenres = (films, isSortCount) => {
 const getProfile = (filtredFilms) => {
 
   switch (true) {
-    case filtredFilms.length === 0: {
+    case filtredFilms.length === filmsViewed.novice: {
       return '';
     }
-    case filtredFilms.length > 0 && filtredFilms.length <= 10: {
+    case filtredFilms.length > filmsViewed.novice && filtredFilms.length <= filmsViewed.fan: {
       return 'novice';
     }
-    case filtredFilms.length > 10 && filtredFilms.length <= 20: {
+    case filtredFilms.length > filmsViewed.fan && filtredFilms.length <= filmsViewed.buff: {
       return 'fan';
     }
-    case filtredFilms.length > 20: {
+    case filtredFilms.length > filmsViewed.buff: {
       return 'movie buff';
     }
   }

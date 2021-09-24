@@ -208,24 +208,6 @@ export default class Board {
     films.forEach((film) => this._renderFilm(film));
   }
 
-  _renderListFilms () {
-    const filmCount = this._getFilms().length;
-    const films = this._getFilms().slice(0, Math.min(filmCount, CARD_COUNT_STEP));
-
-    this._renderFilms(films);
-
-    if (filmCount > CARD_COUNT_STEP) {
-      this._renderLoadButton();
-    }
-  }
-
-  _clearFilmList() {
-    this._filmsPresenters.forEach((presenter) => presenter.destroy());
-    this._filmsPresenters.clear();
-    this._renderedFilmCount = CARD_COUNT_STEP;
-    remove(this._loadButton);
-  }
-
   _renderNoFilms () {
     this._noFilmComponent = new NoFilmView(this._filterType);
     renderTemplate(this._filmListComponent, this._noFilmComponent);
