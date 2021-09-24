@@ -214,6 +214,7 @@ export default class Popup extends SmartView {
     this._textInputHandler = this._textInputHandler.bind(this);
     this.handlerAddComment = this.handlerAddComment.bind(this);
     this.handlerRemoveComment = this.handlerRemoveComment.bind(this);
+    this._handlerKeyEsc = this._handlerKeyEsc.bind(this);
 
     this._setInnerHandlers();
   }
@@ -327,18 +328,25 @@ export default class Popup extends SmartView {
   _closeElement () {
     this.getElement().remove();
     document.body.classList.remove('hide-overflow');
+    this._keyCloseRemoveHandler();
   }
 
-  _keyCloseHandler () {
-    document.addEventListener('keydown', ({keyCode}) => {
-      if (keyCode === ESC) {
-        this._closeElement();
-      }
-    });
+  _keyCloseAddHandler () {
+    document.addEventListener('keydown', this._handlerKeyEsc);
+  }
+
+  _keyCloseRemoveHandler () {
+    document.removeEventListener('keydown', this._handlerKeyEsc);
+  }
+
+  _handlerKeyEsc ({keyCode}) {
+    if (keyCode === ESC) {
+      this._closeElement();
+    }
   }
 
   closePopup () {
-    this._keyCloseHandler();
+    this._keyCloseAddHandler();
     const button = this.getElement().querySelector('.film-details__close-btn');
     button.addEventListener('click', () => {
       this._closeElement();
