@@ -78,6 +78,7 @@ export default class Film {
         if (document.querySelector('.film-details')) {
           document.querySelector('.film-details').remove();
           renderTemplate(document.body, popup.getElement());
+          document.body.classList.add('hide-overflow');
         }
 
         renderTemplate(document.body, popup.getElement());
