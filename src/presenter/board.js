@@ -172,7 +172,7 @@ export default class Board {
     const filtredFilms = filter[this._filterType](films);
     const filtredStastFilms = watchingDate(filtredFilms, this._statsFilterType);
 
-    this._statsComponent = new StatisticView(this._statsFilterType, filtredStastFilms);
+    this._statsComponent = new StatisticView(this._statsFilterType, filtredStastFilms, filtredFilms);
     renderTemplate(this._boardContainer, this._statsComponent);
     this._statsComponent.setFilterTypeChangeHandler(this._handleStatsFilter);
   }

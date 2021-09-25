@@ -1,5 +1,5 @@
 import Abstract from '../view/abstract.js';
-import { StatsFilterType, filmsViewed } from './const.js';
+import { StatsFilterType, FilmsViewed, FilterDate } from './const.js';
 import dayjs from 'dayjs';
 
 const renderTemplate = (container, element, position = true) => {
@@ -115,16 +115,16 @@ const getTopGenres = (films, isSortCount) => {
 const getProfile = (filtredFilms) => {
 
   switch (true) {
-    case filtredFilms.length === filmsViewed.novice: {
+    case filtredFilms.length === FilmsViewed.NOVICE: {
       return '';
     }
-    case filtredFilms.length > filmsViewed.novice && filtredFilms.length <= filmsViewed.fan: {
+    case filtredFilms.length > FilmsViewed.NOVICE && filtredFilms.length <= FilmsViewed.FAN: {
       return 'novice';
     }
-    case filtredFilms.length > filmsViewed.fan && filtredFilms.length <= filmsViewed.buff: {
+    case filtredFilms.length > FilmsViewed.FAN && filtredFilms.length <= FilmsViewed.BUFF: {
       return 'fan';
     }
-    case filtredFilms.length > filmsViewed.buff: {
+    case filtredFilms.length > FilmsViewed.BUFF: {
       return 'movie buff';
     }
   }
@@ -145,16 +145,16 @@ const watchingDate = (date, sortType) => {
       return date;
     }
     case StatsFilterType.YEAR: {
-      return date = date.filter((film) => dayjs(film.watchingDate).diff() > -31536000000);
+      return date = date.filter((film) => dayjs(film.watchingDate).diff() > FilterDate.YEAR);
     }
     case StatsFilterType.MONTH: {
-      return date = date.filter((film) => dayjs(film.watchingDate).diff() > -2592000000);
+      return date = date.filter((film) => dayjs(film.watchingDate).diff() > FilterDate.MONTH);
     }
     case StatsFilterType.WEEK: {
-      return date = date.filter((film) => dayjs(film.watchingDate).diff() > -604800000);
+      return date = date.filter((film) => dayjs(film.watchingDate).diff() > FilterDate.WEEK);
     }
     case StatsFilterType.TODAY: {
-      return date = date.filter((film) => dayjs(film.watchingDate).diff() > -86400000);
+      return date = date.filter((film) => dayjs(film.watchingDate).diff() > FilterDate.TODAY);
     }
   }
 };

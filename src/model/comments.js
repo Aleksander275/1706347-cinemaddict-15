@@ -33,28 +33,4 @@ export default class Comments extends AbstractObserver {
     this._comments[filmId].splice(filmIndex, 1);
     this._notify(updateType);
   }
-
-  static adaptToClient(film) {
-    const adaptedFilm = Object.assign(
-      {},
-      film,
-      {
-
-      },
-    );
-
-    return adaptedFilm;
-  }
-
-  static adaptToServer(film) {
-    const adaptedFilm = Object.assign(
-      {},
-      film,
-      {
-
-      },
-    );
-
-    return adaptedFilm;
-  }
 }

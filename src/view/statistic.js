@@ -66,7 +66,7 @@ const renderChart = (statisticCtx, data) => {
   });
 };
 
-const createStatistic = (currentFilterType = 'all-time' ,data) => {
+const createStatistic = (currentFilterType = 'all-time' ,data, filtredFilms) => {
   const hoursTime = Math.floor(getTotalDuration(data) / MINUTES);
   const minutesTime = getTotalDuration(data) % MINUTES;
 
@@ -74,7 +74,7 @@ const createStatistic = (currentFilterType = 'all-time' ,data) => {
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${getProfile(data)}</span>
+      <span class="statistic__rank-label">${getProfile(filtredFilms)}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -129,11 +129,11 @@ const createStatistic = (currentFilterType = 'all-time' ,data) => {
 };
 
 export default class Statistic extends SmartView {
-  constructor(currentFilterType, data) {
+  constructor(currentFilterType, data, filtredFilms) {
     super();
     this._data = data;
     this._currentFilterType = currentFilterType;
-
+    this._filtredFilms = filtredFilms;
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
 
     this._statisticChart = this.getElement().querySelector('.statistic__chart');
@@ -141,7 +141,7 @@ export default class Statistic extends SmartView {
   }
 
   getTemplate() {
-    return createStatistic(this._currentFilterType, this._data);
+    return createStatistic(this._currentFilterType, this._data, this._filtredFilms);
   }
 
   _filterTypeChangeHandler(evt) {
